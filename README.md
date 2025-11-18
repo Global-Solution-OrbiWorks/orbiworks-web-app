@@ -1,141 +1,290 @@
-# OrbiWorks — Front-end
+# OrbiWorks — Plataforma de Aprendizado Contínuo
 
-Plataforma OrbiWorks — Front-end em Vite + React + TypeScript + Tailwind. Trilhas de aprendizado com IA, projetos reais com empresas, coaching de carreira, bem-estar e gamificação. Pronto para Git Flow e deploy na Vercel.
+## Descrição
 
-## Visão Geral
+A OrbiWorks é uma plataforma de aprendizagem contínua e carreira com propósito. Unimos inteligência artificial para trilhas personalizadas, mercado de projetos reais com empresas, coaching de carreira via chatbot, bem-estar e produtividade, além de comunidade e gamificação.
 
-A OrbiWorks é uma plataforma de aprendizagem contínua e carreira com propósito. Unimos:
-- IA para trilhas personalizadas (skills gap → plano de estudo + projetos práticos)
-- Mercado de projetos reais e vagas com empresas
-- Coaching de carreira via chatbot
-- Bem-estar e produtividade (check-ins de humor, Pomodoro, alertas de burnout)
-- Comunidade e gamificação (XP, badges, desafios)
+**Público-alvo:** Pessoas em transição de carreira (B2C) e empresas que requalificam times (B2B).  
+**Alinhamento ODS:** 4, 8, 9 e 10.
 
-Público-alvo: pessoas em transição de carreira (B2C) e empresas que requalificam times (B2B).  
-Alinhamento ODS: 4, 8, 9 e 10.
+## Status do Projeto
 
-## Integrantes
+✅ **Em desenvolvimento ativo** — Versão 0.1.0
 
-- João Vitor Lacerda Consorte — RM: 565565
-- Pedro de Matos Previtali — RM: 564184
-- Murillo Fernandes Carapia — RM: 564969
+Funcionalidades implementadas:
+- ✅ Tema escuro/claro com Context API e persistência
+- ✅ Rotas estáticas e dinâmicas (`/projetos/:id`)
+- ✅ Página de Equipe completa com RM, Turma e links
+- ✅ Integração com API Java remota (com fallback para mocks)
+- ✅ Formulário de Contato com validação
+- ✅ Página 404 (NotFound)
+- ✅ Responsividade e acessibilidade básica
 
-## Stack
+## Sumário
 
-- Vite + React + TypeScript
-- Tailwind CSS (com @tailwindcss/postcss e autoprefixer)
-- Node >= 18, NPM >= 9
-- Opcional: ESLint/Prettier
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Tecnologias Utilizadas](#tecnologias-utilizadas)
+- [Instalação](#instalação)
+- [Como Usar](#como-usar)
+- [Variáveis de Ambiente](#variáveis-de-ambiente)
+- [Estrutura de Pastas](#estrutura-de-pastas)
+- [Endpoints ou Rotas Principais](#endpoints-ou-rotas-principais)
+- [Autores e Créditos](#autores-e-créditos)
+- [Screenshots / Demonstração](#screenshots--demonstração)
+- [Deploy Vercel](#deploy-vercel)
+- [Contato](#contato)
 
-## Começando
+## Sobre o Projeto
 
-Pré-requisitos:
-- Node 18+ e npm 9+
+A OrbiWorks oferece:
 
-Instalação e execução:
-- npm install
-- npm run dev
-- Acesse http://localhost:5173
+- **Trilhas de Aprendizado com IA:** Identificação de skills gap e criação de planos de estudo personalizados
+- **Projetos Reais:** Conexão entre profissionais e empresas através de projetos práticos
+- **Coaching de Carreira:** Chatbot inteligente para orientação profissional
+- **Bem-estar e Produtividade:** Check-ins de humor, Pomodoro, alertas de burnout
+- **Comunidade e Gamificação:** XP, badges, desafios e ranking
 
-Build e preview:
-- npm run build
-- npm run preview
+## Tecnologias Utilizadas
 
-Scripts (package.json):
-- dev: inicia o Vite em modo desenvolvimento
-- build: tsc -b && vite build
-- preview: pré-visualiza a build
+- **React 18.2.0** — Biblioteca JavaScript para interfaces
+- **TypeScript 5.1.6** — Superset JavaScript com tipagem estática
+- **Vite 5.1.0** — Build tool e dev server
+- **Tailwind CSS 3.4.7** — Framework CSS utility-first
+- **React Router DOM 6.14.1** — Roteamento para React
+- **Node.js >= 18** — Runtime JavaScript
+- **npm >= 9** — Gerenciador de pacotes
 
-## Estrutura de Pastas (sugerida)
+## Instalação
 
-- src/
-  - assets/
-  - components/ (Button, Card, Navbar, Footer, etc.)
-  - pages/ (Home, Solucao, Planos, Equipe, Contato, Trilhas, Projetos, BemEstar, Chatbot, Comunidade, Admin)
-  - routes/ (AppRoutes.tsx)
-  - data/ (mocks: skills, badges, persons, projects)
-  - styles/ (tokens adicionais se necessário)
-  - main.tsx
-  - index.css (apenas diretivas Tailwind)
-- public/ (favicon e metadados)
-- README.md
+### Pré-requisitos
 
-## Tema e Identidade (resumo)
+- Node.js 18 ou superior
+- npm 9 ou superior
 
-- Nome: OrbiWorks
-- Slogan: Aprendizado contínuo. Carreira com propósito.
-- Paleta base (sugestão):
-  - primary: azul-orbi (ex.: 500 #1f7fff)
-  - accent: verde (ex.: 500 #22c55e)
-  - state: success #16a34a, warning #f59e0b, danger #ef4444, info #0ea5e9
-- Tipografia: Inter, system-ui
+### Passos
 
-## Rotas previstas
+1. Clone o repositório:
+```bash
+git clone <url-do-repositorio>
+cd global_solution_orbi_works
+```
 
-- / (Home): proposta de valor, CTAs principais
-- /solucao: visão dos módulos
-- /planos: tiers/valores (placeholder)
-- /equipe: integrantes com foto, papel e links
-- /contato: formulário/links
-- /trilhas: IA de Trilhas (placeholder com cards)
-- /projetos: projetos/vagas (lista mock)
-- /bem-estar: check-ins de humor e Pomodoro (placeholder)
-- /chatbot: chatbot de carreira (UI mínima)
-- /comunidade: squads, badges, ranking (mock)
-- /admin: gestão corporativa (placeholder)
+2. Instale as dependências:
+```bash
+npm install
+```
 
-## Dados Mock (a implementar)
+3. Configure as variáveis de ambiente (veja seção [Variáveis de Ambiente](#variáveis-de-ambiente)):
+```bash
+cp .env.example .env
+# Edite o arquivo .env e configure VITE_API_URL
+```
 
-- skills: lista de habilidades, níveis, tags
-- badges: conquistas com ícone, descrição e critérios
-- persons: perfis/personas da comunidade
-- projects: projetos/vagas com empresa, stack e status
+4. Execute o servidor de desenvolvimento:
+```bash
+npm run dev
+```
 
-## Git Flow
+5. Acesse `http://localhost:5173` no navegador.
 
-- main: produção
-- develop: integração
-- features: feature/slug (partem de develop, PR → develop)
-- releases: release/x.y.z (partem de develop, merge → main e → develop)
-- hotfixes: hotfix/slug (partem de main, merge → main e → develop)
+## Como Usar
 
-Comandos úteis:
-- git branch -M main
-- git checkout -b develop
-- git push -u origin main
-- git push -u origin develop
-- git checkout -b feature/nome
-- git push -u origin feature/nome
+### Scripts Disponíveis
 
-## Convenções
+- `npm run dev` — Inicia o servidor de desenvolvimento (Vite)
+- `npm run build` — Compila TypeScript e gera build de produção (`dist/`)
+- `npm run preview` — Pré-visualiza a build otimizada localmente
+- `npm run type-check` — Verifica erros de tipo TypeScript sem gerar arquivos
 
-- Commits: Conventional Commits (ex.: feat:, fix:, chore:, docs:, refactor:)
-- Código: respeitar ESLint/Prettier se configurados
-- Acessibilidade: foco visível, aria-labels, contraste
-- Responsividade: breakpoints padrão do Tailwind
+### URL Pública (Vercel)
 
-## Deploy (Vercel)
+🔗 **Aplicação em produção:** [https://orbiworks.vercel.app](https://orbiworks.vercel.app) *(atualize com a URL real após deploy)*
 
-- Conecte o repositório
-- Framework: Vite
-- Build Command: vite build
-- Output Directory: dist
-- Branch de produção: main
+## Variáveis de Ambiente
 
-## Roadmap (resumo)
+Crie um arquivo `.env` na raiz do projeto com:
 
-1) Scaffold Vite + TS + Tailwind e saneamento
-2) Tokens de tema e componentes base (Button, Card, Input, Navbar, Footer)
-3) Rotas e páginas iniciais
-4) Mocks (skills, badges, persons, projects)
-5) Acessibilidade e responsividade
-6) Página de Equipe completa
-7) Documentação e automações
-8) Deploy e verificação (Lighthouse)
+```env
+VITE_API_URL=https://sua-api-remota.com
+```
 
-## Licença
+**Importante:**
+- No ambiente local, configure `VITE_API_URL` no arquivo `.env`
+- Na Vercel, adicione a variável `VITE_API_URL` nas configurações do projeto (Settings → Environment Variables)
+- Se a API não estiver disponível, a aplicação usa mocks locais como fallback
 
-Defina aqui a licença do projeto (ex.: MIT). Caso indefinida, mantenha “All rights reserved” temporariamente.
+## Estrutura de Pastas
+
+```
+global_solution_orbi_works/
+├── src/
+│   ├── components/          # Componentes reutilizáveis
+│   │   ├── Badge.tsx
+│   │   ├── Button.tsx
+│   │   ├── Card.tsx
+│   │   ├── Footer.tsx
+│   │   ├── Input.tsx
+│   │   ├── MemberCard.tsx
+│   │   ├── Navbar.tsx
+│   │   └── ThemeToggle.tsx
+│   ├── context/             # Context API
+│   │   └── ThemeContext.tsx
+│   ├── layouts/             # Layouts
+│   │   └── MainLayout.tsx
+│   ├── mocks/                # Dados mock
+│   │   ├── badges.ts
+│   │   ├── persons.ts
+│   │   ├── projects.ts
+│   │   └── skills.ts
+│   ├── pages/                # Páginas da aplicação
+│   │   ├── Admin.tsx
+│   │   ├── BemEstar.tsx
+│   │   ├── Chatbot.tsx
+│   │   ├── Comunidade.tsx
+│   │   ├── Contato.tsx
+│   │   ├── Equipe.tsx
+│   │   ├── Home.tsx
+│   │   ├── NotFound.tsx
+│   │   ├── Planos.tsx
+│   │   ├── ProjetoDetalhe.tsx
+│   │   ├── Projetos.tsx
+│   │   ├── Solucao.tsx
+│   │   └── Trilhas.tsx
+│   ├── services/             # Serviços de API
+│   │   └── api.ts
+│   ├── types/                 # Tipagens TypeScript
+│   │   ├── member.ts
+│   │   └── projeto.ts
+│   ├── utils/                 # Utilitários
+│   │   └── avatar.ts
+│   ├── App.tsx
+│   ├── AppRouter.tsx
+│   ├── index.css
+│   └── main.tsx
+├── .env.example              # Exemplo de variáveis de ambiente
+├── index.html
+├── package.json
+├── tailwind.config.cjs
+├── tsconfig.json
+└── vite.config.ts
+```
+
+## Endpoints ou Rotas Principais
+
+### Rotas da Aplicação
+
+| Rota | Descrição |
+|------|-----------|
+| `/` | Página inicial (Home) |
+| `/solucao` | Visão geral da solução |
+| `/trilhas` | Trilhas de aprendizado |
+| `/projetos` | Lista de projetos e vagas |
+| `/projetos/:id` | Detalhes de um projeto específico (rota dinâmica) |
+| `/bem-estar` | Bem-estar e produtividade |
+| `/chatbot` | Chatbot de carreira |
+| `/comunidade` | Comunidade e gamificação |
+| `/equipe` | Página da equipe (integrantes) |
+| `/contato` | Formulário de contato |
+| `/admin` | Área administrativa |
+| `*` | Página 404 (NotFound) |
+
+### Endpoints da API (Java)
+
+A aplicação consome os seguintes endpoints (configurados via `VITE_API_URL`):
+
+- `GET /projetos` — Lista todos os projetos
+- `GET /projetos/:id` — Busca um projeto por ID
+- `POST /contato` — Envia mensagem de contato
+
+**Exemplo de uso:**
+```typescript
+import { getProjetos, getProjetoById, postContato } from './services/api'
+
+// Listar projetos
+const projetos = await getProjetos()
+
+// Buscar projeto específico
+const projeto = await getProjetoById('pr1')
+
+// Enviar contato
+await postContato({
+  nome: 'João Silva',
+  email: 'joao@example.com',
+  mensagem: 'Mensagem de contato'
+})
+```
+
+## Autores e Créditos
+
+### Integrantes da Equipe
+
+| Nome | RM | Turma | Role | LinkedIn | GitHub |
+|------|----|----|------|----------|--------|
+| João Vitor Lacerda Consorte | 565565 | 1TDSPC | Front-end | *[Adicionar link]* | *[Adicionar link]* |
+| Pedro de Matos Previtali | 564184 | 1TDSPC | Front-end | *[Adicionar link]* | *[Adicionar link]* |
+| Murillo Fernandes Carapia | 564969 | 1TDSPC | Front-end | *[Adicionar link]* | *[Adicionar link]* |
+
+## Screenshots / Demonstração
+
+### Home
+![Home](https://via.placeholder.com/800x400?text=Home+OrbiWorks) *(substitua por screenshot real)*
+
+### Trilhas
+![Trilhas](https://via.placeholder.com/800x400?text=Trilhas) *(substitua por screenshot real)*
+
+### Projetos
+![Projetos](https://via.placeholder.com/800x400?text=Projetos) *(substitua por screenshot real)*
+
+### Equipe
+![Equipe](https://via.placeholder.com/800x400?text=Equipe) *(substitua por screenshot real)*
+
+### Tema Escuro
+![Tema Escuro](https://via.placeholder.com/800x400?text=Dark+Mode) *(substitua por screenshot real)*
+
+## Deploy Vercel
+
+### Configuração
+
+1. **Conecte o repositório** no Vercel (via GitHub/GitLab/Bitbucket)
+
+2. **Configure o projeto:**
+   - **Framework Preset:** Vite
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+   - **Install Command:** `npm install`
+
+3. **Adicione variáveis de ambiente:**
+   - Vá em **Settings → Environment Variables**
+   - Adicione `VITE_API_URL` com a URL da sua API Java remota
+   - Exemplo: `VITE_API_URL=https://api.orbiworks.example.com`
+
+4. **Deploy:**
+   - O Vercel fará deploy automático a cada push na branch `main`
+   - Ou faça deploy manual via CLI: `vercel --prod`
+
+### Comandos Úteis
+
+```bash
+# Build local para testar
+npm run build
+
+# Preview da build
+npm run preview
+
+# Deploy via Vercel CLI (se instalado)
+vercel
+```
+
+## Contato
+
+Para dúvidas, sugestões ou problemas:
+
+- **Email:** contato@orbiworks.example *(atualize com email real)*
+- **Formulário:** Acesse `/contato` na aplicação
+- **GitHub:** [Link do repositório] *(atualize com link real)*
 
 ---
-Dúvidas ou sugestões? Abra uma issue ou envie um PR.
+
+**OrbiWorks** — Aprendizado contínuo. Carreira com propósito.
+
+© 2024 OrbiWorks — Todos os direitos reservados.
