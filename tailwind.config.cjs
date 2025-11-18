@@ -38,6 +38,10 @@ module.exports = {
       },
       boxShadow: {
         smsoft: '0 6px 20px rgba(16,24,40,0.06)'
+      },
+      container: {
+        center: true,
+        padding: '1rem'
       }
     }
   },
