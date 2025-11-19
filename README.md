@@ -105,7 +105,8 @@ npm run dev
 Crie um arquivo `.env` na raiz do projeto com:
 
 ```env
-VITE_API_URL=https://sua-api-remota.com
+# URL da API OrbiWorks (ex.: ambiente de staging/prod)
+VITE_API_URL=https://rm564969orbiworksgs.onrender.com
 ```
 
 **Importante:**
@@ -192,8 +193,12 @@ global_solution_orbi_works/
 
 A aplicação consome os seguintes endpoints (configurados via `VITE_API_URL`):
 
-- `GET /projetos` — Lista todos os projetos
-- `GET /projetos/:id` — Busca um projeto por ID
+- `GET /orbiworks` — Lista todos os registros OrbiWorks (usado como fonte de projetos no front-end)
+- `GET /orbiworks/:codigo` — Busca um registro por ID (compatibilidade com `/:id` de projetos)
+- `GET /habilidades/cliente/{codCliente}` — Busca habilidades por cliente
+- `GET /habilidades` — Lista de habilidades
+- `POST /habilidades` — Cria habilidade
+- `POST /contato` — Envia mensagem de contato
 - `POST /contato` — Envia mensagem de contato
 
 **Exemplo de uso:**
