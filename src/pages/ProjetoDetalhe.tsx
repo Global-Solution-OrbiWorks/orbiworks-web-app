@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { getProjetoById } from '../services/api'
 import type { ProjetoEmpresa } from '../types/projeto'
-import projects from '../mocks/projects'
 import Card from '../components/Card'
 import Badge from '../components/Badge'
 
@@ -27,35 +26,19 @@ export default function ProjetoDetalhe() {
       setError(null)
 
       try {
-        // Tentar buscar da API primeiro
+        // Buscar da API real
         const apiProjeto = await getProjetoById(id)
         if (apiProjeto) {
           setProjeto(apiProjeto)
-          setLoading(false)
-          return
+        } else {
+          setError('Projeto não encontrado')
         }
       } catch (err) {
-        // Se falhar, usar mock como fallback
-        console.warn('API indisponível, usando mock:', err)
+        console.error('Erro ao buscar projeto:', err)
+        setError('Erro ao carregar projeto. Tente novamente mais tarde.')
+      } finally {
+        setLoading(false)
       }
-
-      // Fallback para mock local
-      const mockProjeto = projects.find((p) => p.id === id)
-      if (mockProjeto) {
-        // Converter mock para ProjetoEmpresa
-        const projetoConvertido: ProjetoEmpresa = {
-          id: mockProjeto.id,
-          titulo: mockProjeto.title,
-          area: mockProjeto.tags?.includes('frontend') ? 'frontend' : mockProjeto.tags?.includes('backend') ? 'backend' : 'fullstack',
-          empresa: mockProjeto.company || 'Não especificada',
-          nivel: 'Intermediate',
-          descricao: mockProjeto.description
-        }
-        setProjeto(projetoConvertido)
-      } else {
-        setError('Projeto não encontrado')
-      }
-      setLoading(false)
     }
 
     loadProjeto()
