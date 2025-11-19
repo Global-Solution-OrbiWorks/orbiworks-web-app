@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { matchVagas, getVagas } from '../services/api'
+import { matchVagas, getVagas, findAllOrbiworks, findHabilidadesByCliente } from '../services/api'
 import type { PerfilUsuario, MatchResult, Vaga, Skill } from '../types/projeto'
 import Card from '../components/Card'
 import Button from '../components/Button'
@@ -28,61 +28,51 @@ export default function Solucao() {
 
   const loadVagas = async () => {
     try {
-      const vagasData = await getVagas()
-      setVagas(vagasData)
+      // Buscar dados da API real
+      const orbiworksData = await findAllOrbiworks()
+      
+      // Converter Orbiworks para Vagas
+      const vagasConvertidas = await Promise.all(
+        orbiworksData.map(async (item) => {
+          // Buscar habilidades do cliente se houver código
+          let skillsRequeridas: Skill[] = []
+          if (item.codigo) {
+            try {
+              const habilidades = await findHabilidadesByCliente(item.codigo)
+              skillsRequeridas = habilidades.map((hab) => ({
+                nome: hab.nome || 'Habilidade',
+                nivel: (hab.nivel as any) || 'Intermediate'
+              }))
+            } catch (err) {
+              console.warn('Erro ao buscar habilidades:', err)
+            }
+          }
+
+          return {
+            id: item.codigo?.toString() || `v${Math.random()}`,
+            titulo: item.nome || 'Vaga sem título',
+            empresa: item.email || 'Não especificada',
+            area: 'fullstack' as const,
+            nivel: 'Intermediate' as const,
+            descricao: item.telefone || 'Sem descrição disponível',
+            skillsRequeridas,
+            localizacao: 'Não especificada',
+            tipo: 'remoto' as const
+          }
+        })
+      )
+
+      setVagas(vagasConvertidas)
     } catch (err) {
-      console.warn('API indisponível, usando dados mock:', err)
-      // Mock de vagas para demonstração
-      setVagas([
-        {
-          id: 'v1',
-          titulo: 'Desenvolvedor Full Stack',
-          empresa: 'TechCorp',
-          area: 'fullstack',
-          nivel: 'Intermediate',
-          descricao: 'Desenvolvimento de aplicações web modernas com React e Node.js',
-          skillsRequeridas: [
-            { nome: 'React', nivel: 'Intermediate' },
-            { nome: 'Node.js', nivel: 'Intermediate' },
-            { nome: 'TypeScript', nivel: 'Beginner' }
-          ],
-          localizacao: 'São Paulo, SP',
-          tipo: 'remoto',
-          salario: 'R$ 6.000 - R$ 9.000'
-        },
-        {
-          id: 'v2',
-          titulo: 'Desenvolvedor Backend',
-          empresa: 'DataSystems',
-          area: 'backend',
-          nivel: 'Advanced',
-          descricao: 'Desenvolvimento de APIs robustas e escaláveis',
-          skillsRequeridas: [
-            { nome: 'Java', nivel: 'Advanced' },
-            { nome: 'Spring Boot', nivel: 'Intermediate' },
-            { nome: 'PostgreSQL', nivel: 'Intermediate' }
-          ],
-          localizacao: 'Rio de Janeiro, RJ',
-          tipo: 'hibrido',
-          salario: 'R$ 8.000 - R$ 12.000'
-        },
-        {
-          id: 'v3',
-          titulo: 'Desenvolvedor Frontend',
-          empresa: 'DesignStudio',
-          area: 'frontend',
-          nivel: 'Beginner',
-          descricao: 'Criação de interfaces modernas e responsivas',
-          skillsRequeridas: [
-            { nome: 'React', nivel: 'Beginner' },
-            { nome: 'CSS', nivel: 'Intermediate' },
-            { nome: 'JavaScript', nivel: 'Intermediate' }
-          ],
-          localizacao: 'Belo Horizonte, MG',
-          tipo: 'remoto',
-          salario: 'R$ 4.000 - R$ 6.000'
-        }
-      ])
+      console.error('Erro ao carregar vagas da API:', err)
+      // Em caso de erro, tentar usar getVagas como fallback
+      try {
+        const vagasData = await getVagas()
+        setVagas(vagasData)
+      } catch (fallbackErr) {
+        console.error('Erro no fallback:', fallbackErr)
+        setVagas([])
+      }
     }
   }
 
@@ -233,31 +223,19 @@ export default function Solucao() {
               Endpoints Disponíveis
             </h2>
             <div className="space-y-4">
+              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">Endpoints Orbiworks</h3>
+              
               <div className="border-l-4 border-orbiwork-primary-500 pl-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                     GET
                   </Badge>
                   <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
-                    /vagas
+                    /orbiworks
                   </code>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Retorna todas as vagas disponíveis
-                </p>
-              </div>
-
-              <div className="border-l-4 border-orbiwork-primary-500 pl-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                    GET
-                  </Badge>
-                  <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
-                    /vagas/:id
-                  </code>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Retorna detalhes de uma vaga específica
+                  Retorna todos os registros Orbiworks
                 </p>
               </div>
 
@@ -267,11 +245,111 @@ export default function Solucao() {
                     POST
                   </Badge>
                   <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
-                    /vagas/match
+                    /orbiworks
                   </code>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Realiza match de vagas baseado no perfil do usuário
+                  Cria um novo registro Orbiworks
+                </p>
+              </div>
+
+              <div className="border-l-4 border-orbiwork-primary-500 pl-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                    GET
+                  </Badge>
+                  <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
+                    /orbiworks/{'{codigo}'}
+                  </code>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Busca registro por ID
+                </p>
+              </div>
+
+              <div className="border-l-4 border-orbiwork-primary-500 pl-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                    PUT
+                  </Badge>
+                  <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
+                    /orbiworks/{'{codigo}'}
+                  </code>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Atualiza um registro
+                </p>
+              </div>
+
+              <div className="border-l-4 border-orbiwork-primary-500 pl-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                    DELETE
+                  </Badge>
+                  <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
+                    /orbiworks/{'{codigo}'}
+                  </code>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Deleta um registro
+                </p>
+              </div>
+
+              <h3 className="text-lg font-semibold mt-6 mb-3 text-gray-900 dark:text-gray-100">Endpoints Habilidades</h3>
+              
+              <div className="border-l-4 border-orbiwork-primary-500 pl-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                    POST
+                  </Badge>
+                  <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
+                    /habilidades
+                  </code>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Cria uma nova habilidade
+                </p>
+              </div>
+
+              <div className="border-l-4 border-orbiwork-primary-500 pl-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                    GET
+                  </Badge>
+                  <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
+                    /habilidades/cliente/{'{codCliente}'}
+                  </code>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Retorna habilidades por cliente
+                </p>
+              </div>
+
+              <div className="border-l-4 border-orbiwork-primary-500 pl-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                    PUT
+                  </Badge>
+                  <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
+                    /habilidades/cliente/{'{codigo}'}
+                  </code>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Atualiza uma habilidade
+                </p>
+              </div>
+
+              <div className="border-l-4 border-orbiwork-primary-500 pl-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                    DELETE
+                  </Badge>
+                  <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
+                    /habilidades/cliente/{'{codigo}'}
+                  </code>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Deleta uma habilidade
                 </p>
               </div>
             </div>
@@ -502,24 +580,22 @@ yarn add axios`}</code>
 
               <div>
                 <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
-                  2. Exemplo de Requisição - Match de Vagas
+                  2. Exemplo de Requisição - Buscar Registros
                 </h3>
                 <pre className="bg-gray-900 dark:bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                  <code>{`import { matchVagas } from './services/api'
+                  <code>{`import { findAllOrbiworks, saveOrbiworks } from './services/api'
 
-const perfil = {
+// Buscar todos os registros
+const registros = await findAllOrbiworks()
+console.log(registros)
+
+// Criar novo registro
+const novoRegistro = await saveOrbiworks({
   nome: 'João Silva',
   email: 'joao@example.com',
-  skills: [
-    { nome: 'React', nivel: 'Intermediate' },
-    { nome: 'Node.js', nivel: 'Beginner' }
-  ],
-  areaInteresse: 'fullstack',
-  experienciaAnos: 2
-}
-
-const resultados = await matchVagas({ perfil })
-console.log(resultados)`}</code>
+  telefone: '(11) 99999-9999'
+})
+console.log(novoRegistro)`}</code>
                 </pre>
               </div>
 
@@ -528,30 +604,29 @@ console.log(resultados)`}</code>
                   3. Exemplo de Requisição HTTP Direta
                 </h3>
                 <pre className="bg-gray-900 dark:bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                  <code>{`const response = await fetch('https://api.orbiworks.com/vagas/match', {
+                  <code>{`const response = await fetch('https://rm564969orbiworksgs.onrender.com/orbiworks', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json',
+  }
+})
+
+const registros = await response.json()
+
+// Criar novo registro
+const novoRegistro = await fetch('https://rm564969orbiworksgs.onrender.com/orbiworks', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({
-    perfil: {
-      nome: 'João Silva',
-      email: 'joao@example.com',
-      skills: [
-        { nome: 'React', nivel: 'Intermediate' },
-        { nome: 'Node.js', nivel: 'Beginner' }
-      ],
-      areaInteresse: 'fullstack',
-      experienciaAnos: 2
-    },
-    filtros: {
-      area: 'fullstack',
-      tipo: 'remoto'
-    }
+    nome: 'João Silva',
+    email: 'joao@example.com',
+    telefone: '(11) 99999-9999'
   })
 })
 
-const matches = await response.json()`}</code>
+const resultado = await novoRegistro.json()`}</code>
                 </pre>
               </div>
 
@@ -560,22 +635,30 @@ const matches = await response.json()`}</code>
                   4. Estrutura de Resposta
                 </h3>
                 <pre className="bg-gray-900 dark:bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                  <code>{`[
+                  <code>{`// GET /orbiworks
+[
   {
-    "vaga": {
-      "id": "v1",
-      "titulo": "Desenvolvedor Full Stack",
-      "empresa": "TechCorp",
-      "area": "fullstack",
-      "nivel": "Intermediate",
-      "descricao": "...",
-      "skillsRequeridas": [...]
-    },
-    "score": 85,
-    "compatibilidade": 75,
-    "skillsMatch": [...],
-    "skillsFaltantes": [...],
-    "recomendacao": "Excelente match!"
+    "codigo": 1,
+    "nome": "João Silva",
+    "email": "joao@example.com",
+    "telefone": "(11) 99999-9999"
+  },
+  {
+    "codigo": 2,
+    "nome": "Maria Santos",
+    "email": "maria@example.com",
+    "telefone": "(11) 88888-8888"
+  }
+]
+
+// GET /habilidades/cliente/{codCliente}
+[
+  {
+    "codigo": 1,
+    "codCliente": 1,
+    "nome": "React",
+    "nivel": "Intermediate",
+    "descricao": "Framework JavaScript"
   }
 ]`}</code>
                 </pre>
@@ -588,11 +671,14 @@ const matches = await response.json()`}</code>
               Base URL
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Configure a variável de ambiente <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">VITE_API_URL</code> com a URL base da sua API.
+              A API está configurada para usar: <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">https://rm564969orbiworksgs.onrender.com</code>
+            </p>
+            <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+              Você pode configurar a variável de ambiente <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">VITE_API_URL</code> para usar uma URL diferente.
             </p>
             <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
               <code className="text-sm">
-                {import.meta.env.VITE_API_URL || 'https://api.orbiworks.com'}
+                {import.meta.env.VITE_API_URL || 'https://rm564969orbiworksgs.onrender.com'}
               </code>
             </div>
           </Card>

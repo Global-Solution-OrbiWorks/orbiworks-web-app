@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getProjetos } from '../services/api'
+import { getProjetos, findAllOrbiworks } from '../services/api'
 import type { ProjetoEmpresa } from '../types/projeto'
-import projects from '../mocks/projects'
 import Card from '../components/Card'
 import Badge from '../components/Badge'
 
@@ -19,24 +18,17 @@ export default function Projetos() {
       setError(null)
 
       try {
+        // Usar API real
         const apiProjetos = await getProjetos()
         if (apiProjetos && apiProjetos.length > 0) {
           setProjetos(apiProjetos)
         } else {
-          throw new Error('Nenhum projeto retornado')
+          setProjetos([])
         }
       } catch (err) {
-        // Fallback para mock local
-        console.warn('API indisponível, usando mock:', err)
-        const mockProjetos: ProjetoEmpresa[] = projects.map((p) => ({
-          id: p.id,
-          titulo: p.title,
-          area: p.tags?.includes('frontend') ? 'frontend' : p.tags?.includes('backend') ? 'backend' : 'fullstack',
-          empresa: p.company || 'Não especificada',
-          nivel: 'Intermediate',
-          descricao: p.description
-        }))
-        setProjetos(mockProjetos)
+        console.error('Erro ao carregar projetos:', err)
+        setError('Erro ao carregar projetos. Tente novamente mais tarde.')
+        setProjetos([])
       } finally {
         setLoading(false)
       }
