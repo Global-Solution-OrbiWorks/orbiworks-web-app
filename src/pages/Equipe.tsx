@@ -10,7 +10,7 @@ const members: Member[] = [
     rm: '565565',
     turma: '1TDSPC',
     role: 'Front-end',
-    imageUrl: '/membros/membro1.jpg',
+    imageUrl: '/membros/membro1.png',
     linkedin: 'https://linkedin.com/in/joao-consorte',
     github: 'https://github.com/joaoconsorte'
   },
@@ -20,7 +20,7 @@ const members: Member[] = [
     rm: '564184',
     turma: '1TDSPC',
     role: 'Front-end',
-    imageUrl: '/membros/membro3.jpg',
+    imageUrl: '/membros/membro3.png',
     linkedin: 'https://linkedin.com/in/pedro-previtali',
     github: 'https://github.com/pedroprevitali'
   },
@@ -30,7 +30,7 @@ const members: Member[] = [
     rm: '564969',
     turma: '1TDSPC',
     role: 'Front-end',
-    imageUrl: '/membros/membro2.jpg',
+    imageUrl: '/membros/membro2.png',
     linkedin: 'https://linkedin.com/in/murillo-carapia',
     github: 'https://github.com/murillocarapia'
   }
