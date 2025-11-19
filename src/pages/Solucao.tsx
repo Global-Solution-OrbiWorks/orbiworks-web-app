@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { matchVagas, getVagas, findAllOrbiworks, findHabilidadesByCliente } from '../services/api'
-import type { PerfilUsuario, MatchResult, Vaga, Skill } from '../types/projeto'
+import { findAllOrbiworks, findHabilidadesByCliente } from '../services/api'
+import type { PerfilUsuario, ClienteComHabilidades, MatchLocalResult, Skill, Nivel } from '../types/orbiworks'
 import Card from '../components/Card'
 import Button from '../components/Button'
 import Badge from '../components/Badge'
@@ -14,65 +14,67 @@ export default function Solucao() {
     areaInteresse: 'fullstack',
     experienciaAnos: 0
   })
-  const [matches, setMatches] = useState<MatchResult[]>([])
-  const [vagas, setVagas] = useState<Vaga[]>([])
+  const [clientes, setClientes] = useState<ClienteComHabilidades[]>([])
+  const [matches, setMatches] = useState<MatchLocalResult[]>([])
   const [loading, setLoading] = useState(false)
+  const [loadingClientes, setLoadingClientes] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'docs' | 'demo' | 'api'>('docs')
-  const [novaSkill, setNovaSkill] = useState({ nome: '', nivel: 'Intermediate' as const })
+  const [novaSkill, setNovaSkill] = useState<{ nome: string; nivel: Nivel }>({ nome: '', nivel: 'Intermediate' })
 
   useEffect(() => {
-    document.title = 'API Match de Vagas — OrbiWorks'
-    loadVagas()
+    document.title = 'OrbiWorks — Clientes e Habilidades'
+    loadClientes()
   }, [])
 
-  const loadVagas = async () => {
+  const loadClientes = async () => {
+    setLoadingClientes(true)
+    setError(null)
+
     try {
-      // Buscar dados da API real
       const orbiworksData = await findAllOrbiworks()
       
-      // Converter Orbiworks para Vagas
-      const vagasConvertidas = await Promise.all(
+      // Enriquecer cada cliente com suas habilidades
+      const clientesComHabilidades = await Promise.all(
         orbiworksData.map(async (item) => {
-          // Buscar habilidades do cliente se houver código
-          let skillsRequeridas: Skill[] = []
+          let habilidades: Skill[] = []
+          
           if (item.codigo) {
             try {
-              const habilidades = await findHabilidadesByCliente(item.codigo)
-              skillsRequeridas = habilidades.map((hab) => ({
-                nome: hab.nome || 'Habilidade',
-                nivel: (hab.nivel as any) || 'Intermediate'
+              const habilidadesData = await findHabilidadesByCliente(item.codigo)
+              habilidades = habilidadesData.map((hab) => ({
+                nome: hab.nome,
+                nivel: (hab.nivel as Nivel) || 'Intermediate'
               }))
             } catch (err) {
-              console.warn('Erro ao buscar habilidades:', err)
+              console.warn('Erro ao buscar habilidades do cliente:', err)
             }
           }
 
+          const nomeCompleto = [item.nome, item.sobrenome].filter(Boolean).join(' ') || 'Cliente sem nome'
+
           return {
             id: item.codigo?.toString() || '',
-            titulo: item.nome || '',
-            empresa: item.email || '',
-            area: 'fullstack' as const,
-            nivel: 'Intermediate' as const,
-            descricao: item.telefone || '',
-            skillsRequeridas,
-            localizacao: '',
-            tipo: 'remoto' as const
+            nome: nomeCompleto,
+            email: item.email || '',
+            habilidades,
+            codigo: item.codigo,
+            sobrenome: item.sobrenome,
+            tipoCliente: item.tipoCliente,
+            areaInteresse: item.areaInteresse,
+            disponibilidadeHoras: item.disponibilidadeHoras,
+            dataContaCriada: item.dataContaCriada
           }
         })
       )
 
-      setVagas(vagasConvertidas)
+      setClientes(clientesComHabilidades)
     } catch (err) {
-      console.error('Erro ao carregar vagas da API:', err)
-      // Em caso de erro, tentar usar getVagas como fallback
-      try {
-        const vagasData = await getVagas()
-        setVagas(vagasData)
-      } catch (fallbackErr) {
-        console.error('Erro no fallback:', fallbackErr)
-        setVagas([])
-      }
+      console.error('Erro ao carregar clientes:', err)
+      setError('Erro ao carregar clientes. Tente novamente mais tarde.')
+      setClientes([])
+    } finally {
+      setLoadingClientes(false)
     }
   }
 
@@ -93,7 +95,19 @@ export default function Solucao() {
     })
   }
 
-  const realizarMatch = async () => {
+  // Função auxiliar para verificar equivalência de níveis
+  const nivelCompativel = (nivelPerfil: Nivel, nivelCliente: Nivel): boolean => {
+    if (nivelPerfil === nivelCliente) return true
+    if (nivelPerfil === 'Advanced') {
+      return nivelCliente === 'Intermediate' || nivelCliente === 'Beginner'
+    }
+    if (nivelPerfil === 'Intermediate') {
+      return nivelCliente === 'Beginner'
+    }
+    return false
+  }
+
+  const calcularMatchLocal = () => {
     if (!perfil.nome || !perfil.email || perfil.skills.length === 0) {
       setError('Preencha nome, email e adicione pelo menos uma skill')
       return
@@ -103,29 +117,27 @@ export default function Solucao() {
     setError(null)
 
     try {
-      // Realizar match real com os dados da API
-      const resultados: MatchResult[] = vagas.map((vaga) => {
-        // Calcular match baseado nas skills do perfil vs skills requeridas
-        const skillsMatch = vaga.skillsRequeridas.filter((skillReq) =>
-          perfil.skills.some((skill) => 
-            skill.nome.toLowerCase() === skillReq.nome.toLowerCase() &&
-            (skill.nivel === skillReq.nivel || 
-             (skill.nivel === 'Advanced' && skillReq.nivel !== 'Advanced') ||
-             (skill.nivel === 'Intermediate' && skillReq.nivel === 'Beginner'))
+      // Calcular match local entre perfil.skills e cliente.habilidades
+      const resultados: MatchLocalResult[] = clientes.map((cliente) => {
+        const skillsMatch = cliente.habilidades.filter((habCliente) =>
+          perfil.skills.some((skillPerfil) => 
+            skillPerfil.nome.toLowerCase() === habCliente.nome.toLowerCase() &&
+            nivelCompativel(skillPerfil.nivel, habCliente.nivel)
           )
         )
-        const skillsFaltantes = vaga.skillsRequeridas.filter(
-          (skillReq) => !skillsMatch.some((skill) => skill.nome === skillReq.nome)
+
+        const skillsFaltantes = cliente.habilidades.filter(
+          (habCliente) => !skillsMatch.some((skill) => skill.nome === habCliente.nome)
         )
-        
-        // Calcular compatibilidade baseada em skills match
-        const totalSkills = vaga.skillsRequeridas.length || 1
+
+        const totalSkills = cliente.habilidades.length || 1
         const compatibilidade = (skillsMatch.length / totalSkills) * 100
-        const score = Math.round(compatibilidade * 0.8 + (perfil.experienciaAnos || 0) * 5)
+        const score = Math.round(compatibilidade * 0.8 + perfil.experienciaAnos * 5)
+        const scoreClamped = Math.min(100, Math.max(0, score))
 
         return {
-          vaga,
-          score: Math.min(100, Math.max(0, score)),
+          cliente,
+          score: scoreClamped,
           compatibilidade: Math.round(compatibilidade),
           skillsMatch,
           skillsFaltantes,
@@ -138,12 +150,12 @@ export default function Solucao() {
             : 'Nenhuma skill compatível encontrada. Considere desenvolver as habilidades requeridas.'
         }
       })
-      
+
       setMatches(resultados.sort((a, b) => b.score - a.score))
       setActiveTab('demo')
     } catch (err) {
-      console.error('Erro ao realizar match:', err)
-      setError('Erro ao realizar match. Tente novamente mais tarde.')
+      console.error('Erro ao calcular match:', err)
+      setError('Erro ao calcular match. Tente novamente mais tarde.')
     } finally {
       setLoading(false)
     }
@@ -153,11 +165,11 @@ export default function Solucao() {
     <section className="max-w-7xl mx-auto px-4 py-12">
       <header className="text-center mb-12">
         <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-          API Match de Vagas
+          OrbiWorks — Clientes e Habilidades
         </h1>
         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          Microserviço inteligente para casar habilidades de perfis com vagas e projetos reais.
-          Encontre as melhores oportunidades baseadas no seu perfil profissional.
+          Sistema de gerenciamento de clientes e habilidades. 
+          Encontre clientes com habilidades compatíveis com seu perfil profissional.
         </p>
       </header>
 
@@ -181,7 +193,7 @@ export default function Solucao() {
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
           }`}
         >
-          Demonstração
+          Match Local
         </button>
         <button
           onClick={() => setActiveTab('api')}
@@ -203,27 +215,26 @@ export default function Solucao() {
               Sobre a API
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              A API de Match de Vagas utiliza algoritmos de inteligência artificial para analisar
-              o perfil profissional do usuário e encontrar as vagas mais compatíveis com suas
-              habilidades, experiência e interesses.
+              A API OrbiWorks fornece endpoints para gerenciamento de clientes e suas habilidades.
+              Todos os dados são reais e vêm diretamente do backend.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
               <div className="p-4 bg-orbiwork-primary-50 dark:bg-orbiwork-primary-900/20 rounded-lg">
-                <h3 className="font-semibold mb-2 text-gray-900 dark:text-gray-100">🎯 Match Inteligente</h3>
+                <h3 className="font-semibold mb-2 text-gray-900 dark:text-gray-100">👥 Clientes</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Algoritmo que analisa skills, experiência e preferências para encontrar o melhor match
+                  CRUD completo para gerenciar clientes OrbiWorks
                 </p>
               </div>
               <div className="p-4 bg-orbiwork-primary-50 dark:bg-orbiwork-primary-900/20 rounded-lg">
-                <h3 className="font-semibold mb-2 text-gray-900 dark:text-gray-100">📊 Score de Compatibilidade</h3>
+                <h3 className="font-semibold mb-2 text-gray-900 dark:text-gray-100">🎯 Habilidades</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Cada match recebe um score de 0-100 baseado na compatibilidade com a vaga
+                  Gerencie habilidades vinculadas a cada cliente
                 </p>
               </div>
               <div className="p-4 bg-orbiwork-primary-50 dark:bg-orbiwork-primary-900/20 rounded-lg">
-                <h3 className="font-semibold mb-2 text-gray-900 dark:text-gray-100">💡 Recomendações</h3>
+                <h3 className="font-semibold mb-2 text-gray-900 dark:text-gray-100">🔍 Match Local</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Sugestões personalizadas sobre skills a desenvolver para melhorar seu match
+                  Cálculo local de compatibilidade entre perfil e habilidades dos clientes
                 </p>
               </div>
             </div>
@@ -274,7 +285,7 @@ export default function Solucao() {
                   </code>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Busca registro por ID
+                  Busca registro por código
                 </p>
               </div>
 
@@ -371,8 +382,15 @@ export default function Solucao() {
       {activeTab === 'demo' && (
         <div className="space-y-8">
           <Card className="p-6">
+            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
+              <p className="text-sm text-blue-800 dark:text-blue-300">
+                <strong>ℹ️ Match Local:</strong> O cálculo de match é realizado localmente no front-end, 
+                comparando suas skills com as habilidades reais dos clientes cadastrados na API.
+              </p>
+            </div>
+
             <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-gray-100">
-              Teste a API
+              Teste o Match Local
             </h2>
 
             <div className="space-y-4">
@@ -415,7 +433,7 @@ export default function Solucao() {
                 <input
                   type="number"
                   min="0"
-                  value={perfil.experienciaAnos || 0}
+                  value={perfil.experienciaAnos}
                   onChange={(e) => setPerfil({ ...perfil, experienciaAnos: parseInt(e.target.value) || 0 })}
                   className="w-full px-3 py-2 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
                 />
@@ -436,7 +454,7 @@ export default function Solucao() {
                   />
                   <select
                     value={novaSkill.nivel}
-                    onChange={(e) => setNovaSkill({ ...novaSkill, nivel: e.target.value as any })}
+                    onChange={(e) => setNovaSkill({ ...novaSkill, nivel: e.target.value as Nivel })}
                     className="px-3 py-2 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
                   >
                     <option value="Beginner">Iniciante</option>
@@ -470,27 +488,46 @@ export default function Solucao() {
                 </div>
               )}
 
-              <Button onClick={realizarMatch} disabled={loading} className="w-full">
-                {loading ? 'Processando...' : 'Realizar Match'}
+              <Button onClick={calcularMatchLocal} disabled={loading || loadingClientes} className="w-full">
+                {loading ? 'Calculando...' : 'Calcular Match Local'}
               </Button>
             </div>
           </Card>
 
+          {loadingClientes && (
+            <div className="text-center py-8">
+              <p className="text-gray-600 dark:text-gray-300">Carregando clientes...</p>
+            </div>
+          )}
+
+          {!loadingClientes && clientes.length === 0 && (
+            <Card className="p-6 text-center">
+              <p className="text-gray-600 dark:text-gray-300 mb-4">Nenhum cliente encontrado.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Os clientes serão exibidos aqui quando disponíveis na API.
+              </p>
+            </Card>
+          )}
+
           {matches.length > 0 && (
             <div>
               <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
-                Resultados do Match
+                Resultados do Match Local
               </h2>
               <div className="space-y-4">
                 {matches.map((match, index) => (
-                  <Card key={match.vaga.id} className="p-6">
+                  <Card key={match.cliente.id || index} className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                          {match.vaga.titulo}
+                          {match.cliente.nome}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-300 mb-2">{match.vaga.empresa}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{match.vaga.descricao}</p>
+                        <p className="text-gray-600 dark:text-gray-300 mb-2">{match.cliente.email}</p>
+                        {match.cliente.areaInteresse && (
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Área: {match.cliente.areaInteresse}
+                          </p>
+                        )}
                       </div>
                       <div className="text-right ml-4">
                         <div className="text-3xl font-bold text-orbiwork-primary-600 dark:text-orbiwork-primary-400">
@@ -501,6 +538,12 @@ export default function Solucao() {
                           {match.compatibilidade}% compatível
                         </div>
                       </div>
+                    </div>
+
+                    <div className="mb-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+                      <p className="text-xs text-blue-700 dark:text-blue-300">
+                        ⚠️ Match Local (calculado no front) — sem endpoint de back
+                      </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -551,14 +594,6 @@ export default function Solucao() {
                         <strong>💡 Recomendação:</strong> {match.recomendacao}
                       </p>
                     </div>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <Badge>{match.vaga.area}</Badge>
-                      <Badge>{match.vaga.nivel}</Badge>
-                      {match.vaga.tipo && <Badge>{match.vaga.tipo}</Badge>}
-                      {match.vaga.localizacao && <Badge>{match.vaga.localizacao}</Badge>}
-                      {match.vaga.salario && <Badge>{match.vaga.salario}</Badge>}
-                    </div>
                   </Card>
                 ))}
               </div>
@@ -574,104 +609,100 @@ export default function Solucao() {
               Como Integrar
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Integre a API de Match de Vagas em sua aplicação usando os exemplos abaixo.
+              Integre a API OrbiWorks em sua aplicação usando os exemplos abaixo.
             </p>
 
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
-                  1. Instalação
+                  1. Base URL
                 </h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-2 text-sm">
+                  Configure a variável de ambiente <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">VITE_API_URL</code> ou use a URL padrão.
+                </p>
                 <pre className="bg-gray-900 dark:bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                  <code>{`npm install axios
-# ou
-yarn add axios`}</code>
+                  <code>{`const BASE_URL = import.meta.env.VITE_API_URL || 'https://rm564969orbiworksgs.onrender.com'`}</code>
                 </pre>
               </div>
 
               <div>
                 <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
-                  2. Exemplo de Requisição - Buscar Registros
+                  2. Exemplo: Listar Clientes
                 </h3>
                 <pre className="bg-gray-900 dark:bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                  <code>{`import { findAllOrbiworks, saveOrbiworks } from './services/api'
-
-// Buscar todos os registros
-const registros = await findAllOrbiworks()
-console.log(registros)
-
-// Criar novo registro
-const novoRegistro = await saveOrbiworks({
-  nome: 'João Silva',
-  email: 'joao@example.com',
-  telefone: '(11) 99999-9999'
-})
-console.log(novoRegistro)`}</code>
-                </pre>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
-                  3. Exemplo de Requisição HTTP Direta
-                </h3>
-                <pre className="bg-gray-900 dark:bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                  <code>{`const response = await fetch('https://rm564969orbiworksgs.onrender.com/orbiworks', {
+                  <code>{`const response = await fetch(\`\${BASE_URL}/orbiworks\`, {
   method: 'GET',
   headers: {
     'Content-Type': 'application/json',
   }
 })
 
-const registros = await response.json()
-
-// Criar novo registro
-const novoRegistro = await fetch('https://rm564969orbiworksgs.onrender.com/orbiworks', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    nome: 'João Silva',
-    email: 'joao@example.com',
-    telefone: '(11) 99999-9999'
-  })
-})
-
-const resultado = await novoRegistro.json()`}</code>
+const clientes = await response.json()`}</code>
                 </pre>
               </div>
 
               <div>
                 <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
-                  4. Estrutura de Resposta
+                  3. Exemplo: Criar Cliente
                 </h3>
                 <pre className="bg-gray-900 dark:bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                  <code>{`// GET /orbiworks
-[
-  {
-    "codigo": 1,
-    "nome": "João Silva",
-    "email": "joao@example.com",
-    "telefone": "(11) 99999-9999"
+                  <code>{`const novoCliente = await fetch(\`\${BASE_URL}/orbiworks\`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
   },
-  {
-    "codigo": 2,
-    "nome": "Maria Santos",
-    "email": "maria@example.com",
-    "telefone": "(11) 88888-8888"
-  }
-]
+  body: JSON.stringify({
+    nome: 'João',
+    sobrenome: 'Silva',
+    email: 'joao@example.com',
+    telefone: '(11) 99999-9999',
+    tipoCliente: 'B2C',
+    areaInteresse: 'fullstack'
+  })
+})
 
-// GET /habilidades/cliente/{codCliente}
-[
+const resultado = await novoCliente.json()`}</code>
+                </pre>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                  4. Exemplo: Buscar Habilidades de um Cliente
+                </h3>
+                <pre className="bg-gray-900 dark:bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto">
+                  <code>{`const habilidades = await fetch(
+  \`\${BASE_URL}/habilidades/cliente/1\`,
   {
-    "codigo": 1,
-    "codCliente": 1,
-    "nome": "React",
-    "nivel": "Intermediate",
-    "descricao": "Framework JavaScript"
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
   }
-]`}</code>
+)
+
+const data = await habilidades.json()`}</code>
+                </pre>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                  5. Exemplo: Criar Habilidade
+                </h3>
+                <pre className="bg-gray-900 dark:bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto">
+                  <code>{`const novaHabilidade = await fetch(\`\${BASE_URL}/habilidades\`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    codCliente: 1,
+    nome: 'React',
+    nivel: 'Intermediate',
+    descricao: 'Framework JavaScript para interfaces'
+  })
+})
+
+const resultado = await novaHabilidade.json()`}</code>
                 </pre>
               </div>
             </div>
@@ -679,14 +710,8 @@ const resultado = await novoRegistro.json()`}</code>
 
           <Card className="p-6">
             <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
-              Base URL
+              Base URL Configurada
             </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              A API está configurada para usar: <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">https://rm564969orbiworksgs.onrender.com</code>
-            </p>
-            <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
-              Você pode configurar a variável de ambiente <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">VITE_API_URL</code> para usar uma URL diferente.
-            </p>
             <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
               <code className="text-sm">
                 {import.meta.env.VITE_API_URL || 'https://rm564969orbiworksgs.onrender.com'}
