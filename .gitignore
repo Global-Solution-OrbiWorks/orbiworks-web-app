@@ -1,7 +1,11 @@
 node_modules/
 dist/
 .env
-.env.*
+# keep .env.example in repo; ignore other env variants
+.env.local
+.env.development
+.env.production
+!.env.example
 .vscode/
 .DS_Store
 npm-debug.log*
