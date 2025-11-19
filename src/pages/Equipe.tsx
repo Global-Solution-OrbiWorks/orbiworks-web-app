@@ -11,8 +11,8 @@ const members: Member[] = [
     turma: '1TDSPC',
     role: 'Front-end',
     imageUrl: generateAvatarDataUrl('João Vitor Lacerda Consorte', '#EAF6FF', '#0b2e66'),
-    linkedin: '',
-    github: ''
+    linkedin: 'https://linkedin.com/in/joao-consorte',
+    github: 'https://github.com/joaoconsorte'
   },
   {
     id: 'pedro-previtali',
@@ -21,8 +21,8 @@ const members: Member[] = [
     turma: '1TDSPC',
     role: 'Front-end',
     imageUrl: generateAvatarDataUrl('Pedro de Matos Previtali', '#FFF7EA', '#a34a16'),
-    linkedin: '',
-    github: ''
+    linkedin: 'https://linkedin.com/in/pedro-previtali',
+    github: 'https://github.com/pedroprevitali'
   },
   {
     id: 'murillo-carapia',
@@ -31,8 +31,8 @@ const members: Member[] = [
     turma: '1TDSPC',
     role: 'Front-end',
     imageUrl: generateAvatarDataUrl('Murillo Fernandes Carapia', '#EDFCEF', '#166635'),
-    linkedin: '',
-    github: ''
+    linkedin: 'https://linkedin.com/in/murillo-carapia',
+    github: 'https://github.com/murillocarapia'
   }
 ]
 
