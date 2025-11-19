@@ -1,5 +1,5 @@
-import type { ProjetoEmpresa, MatchRequest, MatchResult, Vaga, PerfilUsuario } from '../types/projeto'
 import type { Orbiworks, Habilidade } from '../types/orbiworks'
+import type { ProjetoEmpresa } from '../types/projeto'
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'https://rm564969orbiworksgs.onrender.com'
 
@@ -13,6 +13,8 @@ export interface ContatoResponse {
   ok: boolean
   message?: string
 }
+
+// ==================== CRUD Orbiworks ====================
 
 /**
  * Busca todos os registros Orbiworks da API
@@ -46,28 +48,7 @@ export async function findAllOrbiworks(): Promise<Orbiworks[]> {
 }
 
 /**
- * Busca todos os projetos da API (compatibilidade)
- */
-export async function getProjetos(): Promise<ProjetoEmpresa[]> {
-  try {
-    const orbiworks = await findAllOrbiworks()
-    // Converter Orbiworks para ProjetoEmpresa
-    return orbiworks.map((item) => ({
-      id: item.codigo?.toString() || '',
-      titulo: item.nome || '',
-      area: 'fullstack' as const,
-      empresa: item.email || '',
-      nivel: 'Intermediate' as const,
-      descricao: item.telefone || ''
-    }))
-  } catch (error) {
-    console.error('Erro ao buscar projetos:', error)
-    throw error
-  }
-}
-
-/**
- * Busca um registro Orbiworks por ID
+ * Busca um registro Orbiworks por código
  */
 export async function findOrbiworksById(codigo: number): Promise<Orbiworks | null> {
   try {
@@ -94,191 +75,16 @@ export async function findOrbiworksById(codigo: number): Promise<Orbiworks | nul
 }
 
 /**
- * Busca um projeto específico por ID (compatibilidade)
- */
-export async function getProjetoById(id: string): Promise<ProjetoEmpresa | null> {
-  try {
-    const codigo = parseInt(id)
-    if (isNaN(codigo)) {
-      return null
-    }
-
-    const orbiworks = await findOrbiworksById(codigo)
-    if (!orbiworks) {
-      return null
-    }
-
-    // Buscar habilidades do registro
-    let skillsRequeridas: Skill[] = []
-    if (orbiworks.codigo) {
-      try {
-        const habilidades = await findHabilidadesByCliente(orbiworks.codigo)
-        skillsRequeridas = habilidades.map((hab) => ({
-          nome: hab.nome || '',
-          nivel: (hab.nivel as any) || 'Intermediate'
-        }))
-      } catch (err) {
-        console.warn('Erro ao buscar habilidades:', err)
-      }
-    }
-
-    return {
-      id: orbiworks.codigo?.toString() || id,
-      titulo: orbiworks.nome || '',
-      area: 'fullstack' as const,
-      empresa: orbiworks.email || '',
-      nivel: 'Intermediate' as const,
-      descricao: orbiworks.telefone || ''
-    }
-  } catch (error) {
-    console.error('Erro ao buscar projeto:', error)
-    throw error
-  }
-}
-
-/**
- * Envia mensagem de contato
- */
-export async function postContato(payload: ContatoPayload): Promise<ContatoResponse> {
-  if (!BASE_URL) {
-    throw new Error('VITE_API_URL não configurada. Configure a variável de ambiente.')
-  }
-
-  try {
-    const response = await fetch(`${BASE_URL}/contato`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    })
-
-    if (!response.ok) {
-      throw new Error(`Erro ao enviar contato: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-    return { ok: true, ...data }
-  } catch (error) {
-    console.error('Erro ao enviar contato:', error)
-    throw error
-  }
-}
-
-/**
- * Busca todas as vagas disponíveis
- */
-export async function getVagas(): Promise<Vaga[]> {
-  if (!BASE_URL) {
-    throw new Error('VITE_API_URL não configurada. Configure a variável de ambiente.')
-  }
-
-  try {
-    const response = await fetch(`${BASE_URL}/vagas`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error(`Erro ao buscar vagas: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-    return Array.isArray(data) ? data : []
-  } catch (error) {
-    console.error('Erro ao buscar vagas:', error)
-    throw error
-  }
-}
-
-/**
- * Realiza match de vagas com base no perfil do usuário
- */
-export async function matchVagas(request: MatchRequest): Promise<MatchResult[]> {
-  if (!BASE_URL) {
-    throw new Error('VITE_API_URL não configurada. Configure a variável de ambiente.')
-  }
-
-  try {
-    const response = await fetch(`${BASE_URL}/vagas/match`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(request)
-    })
-
-    if (!response.ok) {
-      throw new Error(`Erro ao realizar match: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-    return Array.isArray(data) ? data : []
-  } catch (error) {
-    console.error('Erro ao realizar match:', error)
-    throw error
-  }
-}
-
-/**
- * Busca uma vaga específica por ID
- */
-export async function getVagaById(id: string): Promise<Vaga | null> {
-  try {
-    const codigo = parseInt(id)
-    if (isNaN(codigo)) {
-      return null
-    }
-
-    const orbiworks = await findOrbiworksById(codigo)
-    if (!orbiworks) {
-      return null
-    }
-
-    // Buscar habilidades do registro
-    let skillsRequeridas: Skill[] = []
-    if (orbiworks.codigo) {
-      try {
-        const habilidades = await findHabilidadesByCliente(orbiworks.codigo)
-        skillsRequeridas = habilidades.map((hab) => ({
-          nome: hab.nome || '',
-          nivel: (hab.nivel as any) || 'Intermediate'
-        }))
-      } catch (err) {
-        console.warn('Erro ao buscar habilidades:', err)
-      }
-    }
-
-    return {
-      id: orbiworks.codigo?.toString() || id,
-      titulo: orbiworks.nome || '',
-      empresa: orbiworks.email || '',
-      area: 'fullstack' as const,
-      nivel: 'Intermediate' as const,
-      descricao: orbiworks.telefone || '',
-      skillsRequeridas
-    }
-  } catch (error) {
-    console.error('Erro ao buscar vaga:', error)
-    throw error
-  }
-}
-
-// ==================== CRUD Orbiworks ====================
-
-/**
  * Cria um novo registro Orbiworks
  */
-export async function saveOrbiworks(data: Orbiworks): Promise<Orbiworks> {
+export async function saveOrbiworks(payload: Partial<Orbiworks>): Promise<Orbiworks> {
   try {
     const response = await fetch(`${BASE_URL}/orbiworks`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(payload)
     })
 
     if (!response.ok) {
@@ -296,14 +102,14 @@ export async function saveOrbiworks(data: Orbiworks): Promise<Orbiworks> {
 /**
  * Atualiza um registro Orbiworks
  */
-export async function updateOrbiworks(codigo: number, data: Orbiworks): Promise<Orbiworks> {
+export async function updateOrbiworks(codigo: number, payload: Partial<Orbiworks>): Promise<Orbiworks> {
   try {
     const response = await fetch(`${BASE_URL}/orbiworks/${codigo}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(payload)
     })
 
     if (!response.ok) {
@@ -376,14 +182,14 @@ export async function findHabilidadesByCliente(codCliente: number): Promise<Habi
 /**
  * Cria uma nova habilidade
  */
-export async function saveHabilidade(data: Habilidade): Promise<Habilidade> {
+export async function saveHabilidade(payload: Partial<Habilidade>): Promise<Habilidade> {
   try {
     const response = await fetch(`${BASE_URL}/habilidades`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(payload)
     })
 
     if (!response.ok) {
@@ -401,14 +207,14 @@ export async function saveHabilidade(data: Habilidade): Promise<Habilidade> {
 /**
  * Atualiza uma habilidade
  */
-export async function updateHabilidade(codigo: number, data: Habilidade): Promise<Habilidade> {
+export async function updateHabilidade(codigo: number, payload: Partial<Habilidade>): Promise<Habilidade> {
   try {
     const response = await fetch(`${BASE_URL}/habilidades/cliente/${codigo}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(payload)
     })
 
     if (!response.ok) {
@@ -446,3 +252,81 @@ export async function deleteHabilidade(codigo: number): Promise<boolean> {
   }
 }
 
+// ==================== Funções de Compatibilidade (Legadas) ====================
+// Mantidas apenas para não quebrar páginas antigas que ainda usam
+
+/**
+ * @deprecated Use findAllOrbiworks() diretamente
+ * Busca todos os projetos da API (compatibilidade)
+ */
+export async function getProjetos(): Promise<ProjetoEmpresa[]> {
+  try {
+    const orbiworks = await findAllOrbiworks()
+    return orbiworks.map((item) => ({
+      id: item.codigo?.toString() || '',
+      titulo: item.nome || '',
+      area: 'fullstack' as const,
+      empresa: item.email || '',
+      nivel: 'Intermediate' as const,
+      descricao: item.telefone || ''
+    }))
+  } catch (error) {
+    console.error('Erro ao buscar projetos:', error)
+    throw error
+  }
+}
+
+/**
+ * @deprecated Use findOrbiworksById() diretamente
+ * Busca um projeto específico por ID (compatibilidade)
+ */
+export async function getProjetoById(id: string): Promise<ProjetoEmpresa | null> {
+  try {
+    const codigo = parseInt(id)
+    if (isNaN(codigo)) {
+      return null
+    }
+
+    const orbiworks = await findOrbiworksById(codigo)
+    if (!orbiworks) {
+      return null
+    }
+
+    return {
+      id: orbiworks.codigo?.toString() || id,
+      titulo: orbiworks.nome || '',
+      area: 'fullstack' as const,
+      empresa: orbiworks.email || '',
+      nivel: 'Intermediate' as const,
+      descricao: orbiworks.telefone || ''
+    }
+  } catch (error) {
+    console.error('Erro ao buscar projeto:', error)
+    throw error
+  }
+}
+
+/**
+ * Envia mensagem de contato
+ */
+export async function postContato(payload: ContatoPayload): Promise<ContatoResponse> {
+  try {
+    const response = await fetch(`${BASE_URL}/contato`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      throw new Error(`Erro ao enviar contato: ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    return { ok: true, ...data }
+  } catch (error) {
+    console.error('Erro ao enviar contato:', error)
+    throw error
+  }
+}
