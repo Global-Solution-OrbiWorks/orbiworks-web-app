@@ -52,13 +52,13 @@ export async function getProjetos(): Promise<ProjetoEmpresa[]> {
   try {
     const orbiworks = await findAllOrbiworks()
     // Converter Orbiworks para ProjetoEmpresa
-    return orbiworks.map((item, index) => ({
-      id: item.codigo?.toString() || `pr${index + 1}`,
-      titulo: item.nome || 'Projeto sem título',
+    return orbiworks.map((item) => ({
+      id: item.codigo?.toString() || '',
+      titulo: item.nome || '',
       area: 'fullstack' as const,
-      empresa: item.email || 'Não especificada',
+      empresa: item.email || '',
       nivel: 'Intermediate' as const,
-      descricao: item.telefone || 'Sem descrição disponível'
+      descricao: item.telefone || ''
     }))
   } catch (error) {
     console.error('Erro ao buscar projetos:', error)
@@ -108,13 +108,27 @@ export async function getProjetoById(id: string): Promise<ProjetoEmpresa | null>
       return null
     }
 
+    // Buscar habilidades do registro
+    let skillsRequeridas: Skill[] = []
+    if (orbiworks.codigo) {
+      try {
+        const habilidades = await findHabilidadesByCliente(orbiworks.codigo)
+        skillsRequeridas = habilidades.map((hab) => ({
+          nome: hab.nome || '',
+          nivel: (hab.nivel as any) || 'Intermediate'
+        }))
+      } catch (err) {
+        console.warn('Erro ao buscar habilidades:', err)
+      }
+    }
+
     return {
       id: orbiworks.codigo?.toString() || id,
-      titulo: orbiworks.nome || 'Projeto sem título',
+      titulo: orbiworks.nome || '',
       area: 'fullstack' as const,
-      empresa: orbiworks.email || 'Não especificada',
+      empresa: orbiworks.email || '',
       nivel: 'Intermediate' as const,
-      descricao: orbiworks.telefone || 'Sem descrição disponível'
+      descricao: orbiworks.telefone || ''
     }
   } catch (error) {
     console.error('Erro ao buscar projeto:', error)
@@ -223,15 +237,28 @@ export async function getVagaById(id: string): Promise<Vaga | null> {
       return null
     }
 
-    // Converter para Vaga (estrutura simplificada)
+    // Buscar habilidades do registro
+    let skillsRequeridas: Skill[] = []
+    if (orbiworks.codigo) {
+      try {
+        const habilidades = await findHabilidadesByCliente(orbiworks.codigo)
+        skillsRequeridas = habilidades.map((hab) => ({
+          nome: hab.nome || '',
+          nivel: (hab.nivel as any) || 'Intermediate'
+        }))
+      } catch (err) {
+        console.warn('Erro ao buscar habilidades:', err)
+      }
+    }
+
     return {
       id: orbiworks.codigo?.toString() || id,
-      titulo: orbiworks.nome || 'Vaga sem título',
-      empresa: orbiworks.email || 'Não especificada',
+      titulo: orbiworks.nome || '',
+      empresa: orbiworks.email || '',
       area: 'fullstack' as const,
       nivel: 'Intermediate' as const,
-      descricao: orbiworks.telefone || 'Sem descrição disponível',
-      skillsRequeridas: []
+      descricao: orbiworks.telefone || '',
+      skillsRequeridas
     }
   } catch (error) {
     console.error('Erro ao buscar vaga:', error)
