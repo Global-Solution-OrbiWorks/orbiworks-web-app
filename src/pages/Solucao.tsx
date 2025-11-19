@@ -49,14 +49,14 @@ export default function Solucao() {
           }
 
           return {
-            id: item.codigo?.toString() || `v${Math.random()}`,
-            titulo: item.nome || 'Vaga sem título',
-            empresa: item.email || 'Não especificada',
+            id: item.codigo?.toString() || '',
+            titulo: item.nome || '',
+            empresa: item.email || '',
             area: 'fullstack' as const,
             nivel: 'Intermediate' as const,
-            descricao: item.telefone || 'Sem descrição disponível',
+            descricao: item.telefone || '',
             skillsRequeridas,
-            localizacao: 'Não especificada',
+            localizacao: '',
             tipo: 'remoto' as const
           }
         })
@@ -103,25 +103,29 @@ export default function Solucao() {
     setError(null)
 
     try {
-      const resultados = await matchVagas({ perfil })
-      setMatches(resultados)
-      setActiveTab('demo')
-    } catch (err) {
-      console.warn('API indisponível, simulando match:', err)
-      // Simulação de match para demonstração
-      const resultadosSimulados: MatchResult[] = vagas.map((vaga) => {
+      // Realizar match real com os dados da API
+      const resultados: MatchResult[] = vagas.map((vaga) => {
+        // Calcular match baseado nas skills do perfil vs skills requeridas
         const skillsMatch = vaga.skillsRequeridas.filter((skillReq) =>
-          perfil.skills.some((skill) => skill.nome.toLowerCase() === skillReq.nome.toLowerCase())
+          perfil.skills.some((skill) => 
+            skill.nome.toLowerCase() === skillReq.nome.toLowerCase() &&
+            (skill.nivel === skillReq.nivel || 
+             (skill.nivel === 'Advanced' && skillReq.nivel !== 'Advanced') ||
+             (skill.nivel === 'Intermediate' && skillReq.nivel === 'Beginner'))
+          )
         )
         const skillsFaltantes = vaga.skillsRequeridas.filter(
           (skillReq) => !skillsMatch.some((skill) => skill.nome === skillReq.nome)
         )
-        const compatibilidade = (skillsMatch.length / vaga.skillsRequeridas.length) * 100
+        
+        // Calcular compatibilidade baseada em skills match
+        const totalSkills = vaga.skillsRequeridas.length || 1
+        const compatibilidade = (skillsMatch.length / totalSkills) * 100
         const score = Math.round(compatibilidade * 0.8 + (perfil.experienciaAnos || 0) * 5)
 
         return {
           vaga,
-          score,
+          score: Math.min(100, Math.max(0, score)),
           compatibilidade: Math.round(compatibilidade),
           skillsMatch,
           skillsFaltantes,
@@ -129,10 +133,17 @@ export default function Solucao() {
             ? 'Excelente match! Você possui a maioria das skills necessárias.'
             : compatibilidade >= 50
             ? 'Bom match. Considere desenvolver as skills faltantes.'
-            : 'Match parcial. Recomendamos focar no desenvolvimento das skills requeridas.'
+            : compatibilidade > 0
+            ? 'Match parcial. Recomendamos focar no desenvolvimento das skills requeridas.'
+            : 'Nenhuma skill compatível encontrada. Considere desenvolver as habilidades requeridas.'
         }
       })
-      setMatches(resultadosSimulados.sort((a, b) => b.score - a.score))
+      
+      setMatches(resultados.sort((a, b) => b.score - a.score))
+      setActiveTab('demo')
+    } catch (err) {
+      console.error('Erro ao realizar match:', err)
+      setError('Erro ao realizar match. Tente novamente mais tarde.')
     } finally {
       setLoading(false)
     }
