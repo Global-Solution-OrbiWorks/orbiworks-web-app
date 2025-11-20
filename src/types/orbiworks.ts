@@ -20,9 +20,19 @@ export interface Orbiworks {
 export interface Habilidade {
   codigo?: number
   codCliente: number
-  nome: string
-  nivel: Nivel
-  descricao?: string
+  nome?: string // HABILIDADE_DESC - mantido para compatibilidade
+  nivel?: Nivel // Mantido para compatibilidade
+  descricao?: string // HABILIDADE_DESC - mantido para compatibilidade
+  habilidadeDesc?: string // HABILIDADE_DESC
+  nivelIngles?: string // NIVEL_INGLES
+  objetivoProfissional?: string // OBJETIVO_PROFISSIONAL
+  areaDesejada?: string // AREA_DESEJADA
+  pretencaoSalarial?: number // PRETENSAO_SALARIAL
+  disponibilidadeHoras?: string // DISPONIBILIDADE_HORAS
+  localidadeDesejada?: string // LOCALIDADE_DESEJADA
+  modalidadeDesejada?: string // MODALIDADE_DESEJADA
+  descricaoSobreMim?: string // DESCRICAO_SOBRE_MIM
+  contatoWhatsapp?: string // CONTATO_WHATSAPP
   [key: string]: any // Permite campos adicionais da API
 }
 

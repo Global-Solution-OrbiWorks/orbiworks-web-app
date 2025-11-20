@@ -44,6 +44,11 @@ export default function UserButton() {
                   <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                     {user?.email}
                   </p>
+                  {user?.codigo && (
+                    <p className="text-xs text-orbiwork-primary-600 dark:text-orbiwork-primary-400 font-mono mt-1">
+                      Código: {user.codigo}
+                    </p>
+                  )}
                 </div>
                 <Link
                   to="/perfil"

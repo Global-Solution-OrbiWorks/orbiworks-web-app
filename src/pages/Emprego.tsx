@@ -23,6 +23,17 @@ export default function Emprego() {
   const [showForm, setShowForm] = useState(false)
   const [editingHabilidade, setEditingHabilidade] = useState<Habilidade | null>(null)
   const [formData, setFormData] = useState({
+    habilidadeDesc: '',
+    nivelIngles: '',
+    objetivoProfissional: '',
+    areaDesejada: '',
+    pretencaoSalarial: '',
+    disponibilidadeHoras: '',
+    localidadeDesejada: '',
+    modalidadeDesejada: '',
+    descricaoSobreMim: '',
+    contatoWhatsapp: '',
+    // Campos legados para compatibilidade
     nome: '',
     nivel: 'Intermediate' as Nivel,
     descricao: ''
@@ -67,39 +78,56 @@ export default function Emprego() {
     setError('')
     setSuccess('')
 
-    if (!formData.nome.trim()) {
-      setError('Por favor, preencha o nome da habilidade')
-      return
-    }
-
     setLoading(true)
     try {
+      const payload: Partial<Habilidade> = {
+        codCliente: user.codigo,
+        habilidadeDesc: formData.habilidadeDesc || undefined,
+        nivelIngles: formData.nivelIngles || undefined,
+        objetivoProfissional: formData.objetivoProfissional || undefined,
+        areaDesejada: formData.areaDesejada || undefined,
+        pretencaoSalarial: formData.pretencaoSalarial ? parseFloat(formData.pretencaoSalarial) : undefined,
+        disponibilidadeHoras: formData.disponibilidadeHoras || undefined,
+        localidadeDesejada: formData.localidadeDesejada || undefined,
+        modalidadeDesejada: formData.modalidadeDesejada || undefined,
+        descricaoSobreMim: formData.descricaoSobreMim || undefined,
+        contatoWhatsapp: formData.contatoWhatsapp || undefined,
+        // Campos legados para compatibilidade
+        nome: formData.habilidadeDesc || formData.nome || undefined,
+        descricao: formData.descricaoSobreMim || formData.descricao || undefined
+      }
+
       if (editingHabilidade?.codigo) {
         // Atualizar habilidade existente
-        await updateHabilidade(editingHabilidade.codigo, {
-          nome: formData.nome,
-          nivel: formData.nivel,
-          descricao: formData.descricao || undefined
-        })
-        setSuccess('Habilidade atualizada com sucesso!')
+        await updateHabilidade(editingHabilidade.codigo, payload)
+        setSuccess('Perfil profissional atualizado com sucesso!')
       } else {
         // Criar nova habilidade
-        await saveHabilidade({
-          codCliente: user.codigo,
-          nome: formData.nome,
-          nivel: formData.nivel,
-          descricao: formData.descricao || undefined
-        })
-        setSuccess('Habilidade adicionada com sucesso!')
+        await saveHabilidade(payload)
+        setSuccess('Perfil profissional criado com sucesso!')
       }
 
       // Limpar formulário e recarregar lista
-      setFormData({ nome: '', nivel: 'Intermediate', descricao: '' })
+      setFormData({
+        habilidadeDesc: '',
+        nivelIngles: '',
+        objetivoProfissional: '',
+        areaDesejada: '',
+        pretencaoSalarial: '',
+        disponibilidadeHoras: '',
+        localidadeDesejada: '',
+        modalidadeDesejada: '',
+        descricaoSobreMim: '',
+        contatoWhatsapp: '',
+        nome: '',
+        nivel: 'Intermediate',
+        descricao: ''
+      })
       setEditingHabilidade(null)
       setShowForm(false)
       await loadHabilidades()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao salvar habilidade')
+      setError(err instanceof Error ? err.message : 'Erro ao salvar perfil profissional')
     } finally {
       setLoading(false)
     }
@@ -108,9 +136,20 @@ export default function Emprego() {
   const handleEdit = (habilidade: Habilidade) => {
     setEditingHabilidade(habilidade)
     setFormData({
-      nome: habilidade.nome || '',
+      habilidadeDesc: habilidade.habilidadeDesc || habilidade.nome || '',
+      nivelIngles: habilidade.nivelIngles || '',
+      objetivoProfissional: habilidade.objetivoProfissional || '',
+      areaDesejada: habilidade.areaDesejada || '',
+      pretencaoSalarial: habilidade.pretencaoSalarial?.toString() || '',
+      disponibilidadeHoras: habilidade.disponibilidadeHoras || '',
+      localidadeDesejada: habilidade.localidadeDesejada || '',
+      modalidadeDesejada: habilidade.modalidadeDesejada || '',
+      descricaoSobreMim: habilidade.descricaoSobreMim || habilidade.descricao || '',
+      contatoWhatsapp: habilidade.contatoWhatsapp || '',
+      // Campos legados
+      nome: habilidade.nome || habilidade.habilidadeDesc || '',
       nivel: habilidade.nivel || 'Intermediate',
-      descricao: habilidade.descricao || ''
+      descricao: habilidade.descricao || habilidade.descricaoSobreMim || ''
     })
     setShowForm(true)
     setError('')
@@ -136,7 +175,21 @@ export default function Emprego() {
   }
 
   const handleCancel = () => {
-    setFormData({ nome: '', nivel: 'Intermediate', descricao: '' })
+    setFormData({
+      habilidadeDesc: '',
+      nivelIngles: '',
+      objetivoProfissional: '',
+      areaDesejada: '',
+      pretencaoSalarial: '',
+      disponibilidadeHoras: '',
+      localidadeDesejada: '',
+      modalidadeDesejada: '',
+      descricaoSobreMim: '',
+      contatoWhatsapp: '',
+      nome: '',
+      nivel: 'Intermediate',
+      descricao: ''
+    })
     setEditingHabilidade(null)
     setShowForm(false)
     setError('')
@@ -352,68 +405,385 @@ export default function Emprego() {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-              Minhas Habilidades ({habilidades.length})
+              Meu Perfil Profissional ({habilidades.length})
             </h3>
             {!showForm && (
               <Button onClick={() => setShowForm(true)}>
-                + Adicionar Habilidade
+                {habilidades.length === 0 ? '+ Criar Perfil' : '+ Adicionar Perfil'}
               </Button>
             )}
           </div>
 
-          {/* Formulário de Adicionar/Editar Habilidade */}
+          {/* Formulário de Adicionar/Editar Perfil Profissional */}
           {showForm && (
             <Card className="mb-6 p-6">
               <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                {editingHabilidade ? 'Editar Habilidade' : 'Nova Habilidade'}
+                {editingHabilidade ? 'Editar Perfil Profissional' : 'Novo Perfil Profissional'}
               </h4>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <Input
-                  label="Nome da Habilidade *"
-                  type="text"
-                  name="nome"
-                  value={formData.nome}
-                  onChange={handleChange}
-                  required
-                  placeholder="Ex: React, Python, Node.js"
-                />
-
-                <div>
-                  <label htmlFor="nivel" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Nível *
-                  </label>
-                  <select
-                    id="nivel"
-                    name="nivel"
-                    value={formData.nivel}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    label="Habilidades/Descrição"
+                    type="text"
+                    name="habilidadeDesc"
+                    value={formData.habilidadeDesc}
                     onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orbiwork-primary-500"
-                  >
-                    <option value="Beginner">Iniciante</option>
-                    <option value="Intermediate">Intermediário</option>
-                    <option value="Advanced">Avançado</option>
-                  </select>
-                </div>
+                    placeholder="Ex: React, Python, Node.js"
+                  />
 
-                <div>
-                  <label htmlFor="descricao" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Descrição (opcional)
-                  </label>
-                  <textarea
-                    id="descricao"
-                    name="descricao"
-                    value={formData.descricao}
+                  <div>
+                    <label htmlFor="nivelIngles" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Nível de Inglês
+                    </label>
+                    <select
+                      id="nivelIngles"
+                      name="nivelIngles"
+                      value={formData.nivelIngles}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orbiwork-primary-500"
+                    >
+                      <option value="">Selecione...</option>
+                      <option value="Básico">Básico</option>
+                      <option value="Intermediário">Intermediário</option>
+                      <option value="Avançado">Avançado</option>
+                      <option value="Fluente">Fluente</option>
+                      <option value="Nativo">Nativo</option>
+                    </select>
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label htmlFor="objetivoProfissional" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Objetivo Profissional
+                    </label>
+                    <textarea
+                      id="objetivoProfissional"
+                      name="objetivoProfissional"
+                      value={formData.objetivoProfissional}
+                      onChange={handleChange}
+                      rows={3}
+                      maxLength={300}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orbiwork-primary-500"
+                      placeholder="Descreva seus objetivos profissionais..."
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="areaDesejada" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Área Desejada
+                    </label>
+                    <select
+                      id="areaDesejada"
+                      name="areaDesejada"
+                      value={formData.areaDesejada}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orbiwork-primary-500"
+                    >
+                      <option value="">Selecione uma área...</option>
+                      <optgroup label="Tecnologia da Informação">
+                        <option value="Desenvolvedor Full Stack">Desenvolvedor Full Stack</option>
+                        <option value="Desenvolvedor Frontend">Desenvolvedor Frontend</option>
+                        <option value="Desenvolvedor Backend">Desenvolvedor Backend</option>
+                        <option value="Desenvolvedor Mobile">Desenvolvedor Mobile</option>
+                        <option value="Cientista de Dados">Cientista de Dados</option>
+                        <option value="Analista de Dados">Analista de Dados</option>
+                        <option value="Especialista em IA/Machine Learning">Especialista em IA/Machine Learning</option>
+                        <option value="Designer UX/UI">Designer UX/UI</option>
+                        <option value="Analista de QA/Testes">Analista de QA/Testes</option>
+                        <option value="Gerente de Projetos TI">Gerente de Projetos TI</option>
+                        <option value="Administrador de Sistemas">Administrador de Sistemas</option>
+                        <option value="Especialista em Segurança da Informação">Especialista em Segurança da Informação</option>
+                      </optgroup>
+                      <optgroup label="Administração e Gestão">
+                        <option value="Administrador">Administrador</option>
+                        <option value="Gerente Geral">Gerente Geral</option>
+                        <option value="Gerente de Operações">Gerente de Operações</option>
+                        <option value="Gerente de Projetos">Gerente de Projetos</option>
+                        <option value="Coordenador Administrativo">Coordenador Administrativo</option>
+                        <option value="Assistente Administrativo">Assistente Administrativo</option>
+                        <option value="Analista Administrativo">Analista Administrativo</option>
+                        <option value="Diretor Administrativo">Diretor Administrativo</option>
+                      </optgroup>
+                      <optgroup label="Recursos Humanos">
+                        <option value="Analista de RH">Analista de RH</option>
+                        <option value="Coordenador de RH">Coordenador de RH</option>
+                        <option value="Gerente de RH">Gerente de RH</option>
+                        <option value="Recrutador">Recrutador</option>
+                        <option value="Especialista em Treinamento">Especialista em Treinamento</option>
+                        <option value="Analista de Folha de Pagamento">Analista de Folha de Pagamento</option>
+                        <option value="Psicólogo Organizacional">Psicólogo Organizacional</option>
+                      </optgroup>
+                      <optgroup label="Vendas e Comercial">
+                        <option value="Vendedor">Vendedor</option>
+                        <option value="Representante Comercial">Representante Comercial</option>
+                        <option value="Consultor de Vendas">Consultor de Vendas</option>
+                        <option value="Gerente de Vendas">Gerente de Vendas</option>
+                        <option value="Coordenador de Vendas">Coordenador de Vendas</option>
+                        <option value="Analista de Vendas">Analista de Vendas</option>
+                        <option value="Executivo de Contas">Executivo de Contas</option>
+                        <option value="Especialista em E-commerce">Especialista em E-commerce</option>
+                      </optgroup>
+                      <optgroup label="Marketing e Comunicação">
+                        <option value="Analista de Marketing">Analista de Marketing</option>
+                        <option value="Gerente de Marketing">Gerente de Marketing</option>
+                        <option value="Especialista em Marketing Digital">Especialista em Marketing Digital</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Publicitário">Publicitário</option>
+                        <option value="Jornalista">Jornalista</option>
+                        <option value="Assessor de Imprensa">Assessor de Imprensa</option>
+                        <option value="Designer Gráfico">Designer Gráfico</option>
+                        <option value="Redator">Redator</option>
+                        <option value="Copywriter">Copywriter</option>
+                      </optgroup>
+                      <optgroup label="Finanças e Contabilidade">
+                        <option value="Contador">Contador</option>
+                        <option value="Analista Contábil">Analista Contábil</option>
+                        <option value="Analista Financeiro">Analista Financeiro</option>
+                        <option value="Gerente Financeiro">Gerente Financeiro</option>
+                        <option value="Controller">Controller</option>
+                        <option value="Assistente Contábil">Assistente Contábil</option>
+                        <option value="Auxiliar de Contabilidade">Auxiliar de Contabilidade</option>
+                        <option value="Especialista em Investimentos">Especialista em Investimentos</option>
+                        <option value="Analista de Crédito">Analista de Crédito</option>
+                      </optgroup>
+                      <optgroup label="Engenharia">
+                        <option value="Engenheiro Civil">Engenheiro Civil</option>
+                        <option value="Engenheiro Mecânico">Engenheiro Mecânico</option>
+                        <option value="Engenheiro Elétrico">Engenheiro Elétrico</option>
+                        <option value="Engenheiro de Produção">Engenheiro de Produção</option>
+                        <option value="Engenheiro Químico">Engenheiro Químico</option>
+                        <option value="Engenheiro Ambiental">Engenheiro Ambiental</option>
+                        <option value="Engenheiro de Segurança do Trabalho">Engenheiro de Segurança do Trabalho</option>
+                        <option value="Engenheiro de Automação">Engenheiro de Automação</option>
+                        <option value="Técnico em Engenharia">Técnico em Engenharia</option>
+                      </optgroup>
+                      <optgroup label="Saúde">
+                        <option value="Médico">Médico</option>
+                        <option value="Enfermeiro">Enfermeiro</option>
+                        <option value="Fisioterapeuta">Fisioterapeuta</option>
+                        <option value="Nutricionista">Nutricionista</option>
+                        <option value="Psicólogo">Psicólogo</option>
+                        <option value="Farmacêutico">Farmacêutico</option>
+                        <option value="Dentista">Dentista</option>
+                        <option value="Técnico em Enfermagem">Técnico em Enfermagem</option>
+                        <option value="Auxiliar de Enfermagem">Auxiliar de Enfermagem</option>
+                        <option value="Técnico em Farmácia">Técnico em Farmácia</option>
+                        <option value="Recepcionista de Clínica">Recepcionista de Clínica</option>
+                      </optgroup>
+                      <optgroup label="Educação">
+                        <option value="Professor">Professor</option>
+                        <option value="Coordenador Pedagógico">Coordenador Pedagógico</option>
+                        <option value="Diretor de Escola">Diretor de Escola</option>
+                        <option value="Pedagogo">Pedagogo</option>
+                        <option value="Instrutor">Instrutor</option>
+                        <option value="Tutor">Tutor</option>
+                        <option value="Orientador Educacional">Orientador Educacional</option>
+                        <option value="Bibliotecário">Bibliotecário</option>
+                      </optgroup>
+                      <optgroup label="Direito">
+                        <option value="Advogado">Advogado</option>
+                        <option value="Assessor Jurídico">Assessor Jurídico</option>
+                        <option value="Consultor Jurídico">Consultor Jurídico</option>
+                        <option value="Analista Jurídico">Analista Jurídico</option>
+                        <option value="Estagiário de Direito">Estagiário de Direito</option>
+                      </optgroup>
+                      <optgroup label="Atendimento e Suporte">
+                        <option value="Atendente">Atendente</option>
+                        <option value="Operador de Telemarketing">Operador de Telemarketing</option>
+                        <option value="Recepcionista">Recepcionista</option>
+                        <option value="Atendente de Call Center">Atendente de Call Center</option>
+                        <option value="Analista de Suporte">Analista de Suporte</option>
+                        <option value="Especialista em Customer Success">Especialista em Customer Success</option>
+                      </optgroup>
+                      <optgroup label="Logística e Operações">
+                        <option value="Analista de Logística">Analista de Logística</option>
+                        <option value="Coordenador de Logística">Coordenador de Logística</option>
+                        <option value="Gerente de Logística">Gerente de Logística</option>
+                        <option value="Operador de Logística">Operador de Logística</option>
+                        <option value="Almoxarife">Almoxarife</option>
+                        <option value="Estoquista">Estoquista</option>
+                        <option value="Motorista">Motorista</option>
+                        <option value="Auxiliar de Logística">Auxiliar de Logística</option>
+                      </optgroup>
+                      <optgroup label="Comércio e Varejo">
+                        <option value="Vendedor de Loja">Vendedor de Loja</option>
+                        <option value="Caixa">Caixa</option>
+                        <option value="Gerente de Loja">Gerente de Loja</option>
+                        <option value="Supervisor de Vendas">Supervisor de Vendas</option>
+                        <option value="Repositor">Repositor</option>
+                        <option value="Auxiliar de Vendas">Auxiliar de Vendas</option>
+                      </optgroup>
+                      <optgroup label="Gastronomia e Alimentação">
+                        <option value="Cozinheiro">Cozinheiro</option>
+                        <option value="Chef de Cozinha">Chef de Cozinha</option>
+                        <option value="Garçom">Garçom</option>
+                        <option value="Auxiliar de Cozinha">Auxiliar de Cozinha</option>
+                        <option value="Barista">Barista</option>
+                        <option value="Gerente de Restaurante">Gerente de Restaurante</option>
+                      </optgroup>
+                      <optgroup label="Arquitetura e Construção">
+                        <option value="Arquiteto">Arquiteto</option>
+                        <option value="Arquiteto de Interiores">Arquiteto de Interiores</option>
+                        <option value="Desenhista Técnico">Desenhista Técnico</option>
+                        <option value="Mestre de Obras">Mestre de Obras</option>
+                        <option value="Pedreiro">Pedreiro</option>
+                        <option value="Eletricista">Eletricista</option>
+                        <option value="Encanador">Encanador</option>
+                      </optgroup>
+                      <optgroup label="Outras Áreas">
+                        <option value="Consultor">Consultor</option>
+                        <option value="Assistente Social">Assistente Social</option>
+                        <option value="Tradutor">Tradutor</option>
+                        <option value="Intérprete">Intérprete</option>
+                        <option value="Fotógrafo">Fotógrafo</option>
+                        <option value="Videomaker">Videomaker</option>
+                        <option value="Personal Trainer">Personal Trainer</option>
+                        <option value="Esteticista">Esteticista</option>
+                        <option value="Outra">Outra</option>
+                      </optgroup>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="pretencaoSalarial" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Pretensão Salarial
+                    </label>
+                    <div className="relative">
+                      <div className="mb-3 text-center">
+                        <span className="text-2xl font-bold text-orbiwork-primary-600 dark:text-orbiwork-primary-400">
+                          R$ {formData.pretencaoSalarial ? parseFloat(formData.pretencaoSalarial).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'}
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        id="pretencaoSalarial"
+                        name="pretencaoSalarial"
+                        min="0"
+                        max="50000"
+                        step="500"
+                        value={formData.pretencaoSalarial || '0'}
+                        onChange={handleChange}
+                        className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer range-slider"
+                        style={{
+                          background: formData.pretencaoSalarial 
+                            ? `linear-gradient(to right, #1f7fff 0%, #1f7fff ${((parseFloat(formData.pretencaoSalarial || '0') / 50000) * 100)}%, #e5e7eb ${((parseFloat(formData.pretencaoSalarial || '0') / 50000) * 100)}%, #e5e7eb 100%)`
+                            : '#e5e7eb'
+                        }}
+                      />
+                      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        <span>R$ 0</span>
+                        <span>R$ 50.000</span>
+                      </div>
+                    </div>
+                    <style>{`
+                      .range-slider::-webkit-slider-thumb {
+                        appearance: none;
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 50%;
+                        background: #1f7fff;
+                        cursor: pointer;
+                        border: 3px solid white;
+                        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+                        transition: all 0.2s ease;
+                      }
+                      .range-slider::-webkit-slider-thumb:hover {
+                        transform: scale(1.1);
+                        box-shadow: 0 3px 8px rgba(31, 127, 255, 0.5);
+                      }
+                      .range-slider::-moz-range-thumb {
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 50%;
+                        background: #1f7fff;
+                        cursor: pointer;
+                        border: 3px solid white;
+                        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+                        transition: all 0.2s ease;
+                      }
+                      .range-slider::-moz-range-thumb:hover {
+                        transform: scale(1.1);
+                        box-shadow: 0 3px 8px rgba(31, 127, 255, 0.5);
+                      }
+                      .range-slider::-webkit-slider-runnable-track {
+                        height: 8px;
+                        border-radius: 4px;
+                      }
+                      .range-slider::-moz-range-track {
+                        height: 8px;
+                        border-radius: 4px;
+                        background: transparent;
+                      }
+                    `}</style>
+                  </div>
+
+                  <Input
+                    label="Disponibilidade de Horas"
+                    type="text"
+                    name="disponibilidadeHoras"
+                    value={formData.disponibilidadeHoras}
                     onChange={handleChange}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orbiwork-primary-500"
-                    placeholder="Descreva sua experiência com esta habilidade..."
+                    placeholder="Ex: 40 horas/semana"
+                    maxLength={50}
+                  />
+
+                  <Input
+                    label="Localidade Desejada"
+                    type="text"
+                    name="localidadeDesejada"
+                    value={formData.localidadeDesejada}
+                    onChange={handleChange}
+                    placeholder="Ex: São Paulo, SP"
+                    maxLength={120}
+                  />
+
+                  <div>
+                    <label htmlFor="modalidadeDesejada" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Modalidade Desejada
+                    </label>
+                    <select
+                      id="modalidadeDesejada"
+                      name="modalidadeDesejada"
+                      value={formData.modalidadeDesejada}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orbiwork-primary-500"
+                    >
+                      <option value="">Selecione...</option>
+                      <option value="Presencial">Presencial</option>
+                      <option value="Remoto">Remoto</option>
+                      <option value="Híbrido">Híbrido</option>
+                    </select>
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label htmlFor="descricaoSobreMim" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Descrição Sobre Mim
+                    </label>
+                    <textarea
+                      id="descricaoSobreMim"
+                      name="descricaoSobreMim"
+                      value={formData.descricaoSobreMim}
+                      onChange={handleChange}
+                      rows={4}
+                      maxLength={600}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orbiwork-primary-500"
+                      placeholder="Conte um pouco sobre você, suas experiências e qualificações..."
+                    />
+                  </div>
+
+                  <Input
+                    label="Contato WhatsApp"
+                    type="text"
+                    name="contatoWhatsapp"
+                    value={formData.contatoWhatsapp}
+                    onChange={handleChange}
+                    placeholder="Ex: (11) 99999-9999"
+                    maxLength={30}
                   />
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex gap-3 pt-4">
                   <Button type="submit" disabled={loading}>
-                    {loading ? 'Salvando...' : editingHabilidade ? 'Atualizar' : 'Adicionar'}
+                    {loading ? 'Salvando...' : editingHabilidade ? 'Atualizar' : 'Salvar'}
                   </Button>
                   <Button type="button" variant="outline" onClick={handleCancel} disabled={loading}>
                     Cancelar
@@ -431,36 +801,138 @@ export default function Emprego() {
           ) : habilidades.length === 0 ? (
             <Card className="p-6 text-center">
               <p className="text-gray-500 dark:text-gray-400 mb-4">
-                Você ainda não possui habilidades cadastradas.
+                Você ainda não possui um perfil profissional cadastrado.
               </p>
               {!showForm && (
                 <Button onClick={() => setShowForm(true)}>
-                  Adicionar Primeira Habilidade
+                  Criar Perfil Profissional
                 </Button>
               )}
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {habilidades.map((habilidade) => (
                 <Card key={habilidade.codigo} className="p-6">
-                  <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                      <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                        {habilidade.nome}
+                      <h4 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                        Perfil Profissional
                       </h4>
-                      <Badge className={getNivelColor(habilidade.nivel || 'Intermediate')}>
-                        {getNivelLabel(habilidade.nivel || 'Intermediate')}
-                      </Badge>
                     </div>
                   </div>
                   
-                  {habilidade.descricao && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      {habilidade.descricao}
-                    </p>
-                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    {habilidade.habilidadeDesc && (
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Habilidades</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {habilidade.habilidadeDesc}
+                        </p>
+                      </div>
+                    )}
 
-                  <div className="flex gap-2 mt-4">
+                    {habilidade.nivelIngles && (
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Nível de Inglês</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {habilidade.nivelIngles}
+                        </p>
+                      </div>
+                    )}
+
+                    {habilidade.objetivoProfissional && (
+                      <div className="md:col-span-2">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Objetivo Profissional</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {habilidade.objetivoProfissional}
+                        </p>
+                      </div>
+                    )}
+
+                    {habilidade.areaDesejada && (
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Área Desejada</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {habilidade.areaDesejada}
+                        </p>
+                      </div>
+                    )}
+
+                    {habilidade.pretencaoSalarial && (
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Pretensão Salarial</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          R$ {habilidade.pretencaoSalarial.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </p>
+                      </div>
+                    )}
+
+                    {habilidade.disponibilidadeHoras && (
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Disponibilidade</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {habilidade.disponibilidadeHoras}
+                        </p>
+                      </div>
+                    )}
+
+                    {habilidade.localidadeDesejada && (
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Localidade Desejada</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {habilidade.localidadeDesejada}
+                        </p>
+                      </div>
+                    )}
+
+                    {habilidade.modalidadeDesejada && (
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Modalidade</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {habilidade.modalidadeDesejada}
+                        </p>
+                      </div>
+                    )}
+
+                    {habilidade.descricaoSobreMim && (
+                      <div className="md:col-span-2">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Sobre Mim</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {habilidade.descricaoSobreMim}
+                        </p>
+                      </div>
+                    )}
+
+                    {habilidade.contatoWhatsapp && (
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">WhatsApp</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {habilidade.contatoWhatsapp}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Campos legados para compatibilidade */}
+                    {!habilidade.habilidadeDesc && habilidade.nome && (
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Habilidades</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {habilidade.nome}
+                        </p>
+                      </div>
+                    )}
+
+                    {!habilidade.descricaoSobreMim && habilidade.descricao && (
+                      <div className="md:col-span-2">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Descrição</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {habilidade.descricao}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                     <Button
                       variant="outline"
                       onClick={() => handleEdit(habilidade)}
