@@ -8,6 +8,7 @@ export interface Orbiworks {
   nome?: string
   sobrenome?: string
   email?: string
+  senha?: string
   telefone?: string
   tipoCliente?: string
   areaInteresse?: Area
