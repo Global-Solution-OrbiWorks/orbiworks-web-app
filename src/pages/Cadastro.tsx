@@ -60,6 +60,13 @@ export default function Cadastro() {
         disponibilidadeHoras: disponibilidadeValida
       }
 
+      // Campos snake_case para compatibilidade com o backend
+      if (payload.tipoCliente) payload.tipo_cliente = payload.tipoCliente
+      if (payload.areaInteresse) payload.area_interesse = payload.areaInteresse
+      if (payload.disponibilidadeHoras !== undefined) {
+        payload.disponibilidade_horas = payload.disponibilidadeHoras
+      }
+
       // Remove campos undefined
       Object.keys(payload).forEach((key) => payload[key] === undefined && delete payload[key])
 

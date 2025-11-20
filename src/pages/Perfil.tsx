@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Input from '../components/Input'
 import Button from '../components/Button'
-import type { Area } from '../types/orbiworks'
+import type { Area, Orbiworks } from '../types/orbiworks'
 import { AREA_INTERESSE_OPTIONS } from '../constants/areas'
+import { findOrbiworksById } from '../services/api'
 
 export default function Perfil() {
   const { user, updateProfile, deleteProfile, loading } = useAuth()
@@ -22,23 +23,75 @@ export default function Perfil() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [loadingPerfil, setLoadingPerfil] = useState(true)
 
   useEffect(() => {
+    const toString = (value: unknown) => {
+      if (value === null || value === undefined) return ''
+      return String(value)
+    }
+
+    const mapUserToForm = (data: Partial<Orbiworks> & Record<string, any>) => {
+      const disponibilidadeValor =
+        data.disponibilidadeHoras ?? data.disponibilidade_horas ?? null
+
+      return {
+        nome: toString(data.nome ?? data.NOME),
+        sobrenome: toString(data.sobrenome ?? data.SOBRENOME),
+        email: toString(data.email ?? data.EMAIL),
+        senha: toString(data.senha),
+        telefone: toString(data.telefone ?? data.TELEFONE),
+        tipoCliente:
+          toString(
+            data.tipoCliente ??
+              data.tipo_cliente ??
+              data.TIPO_CLIENTE ??
+              ''
+          ),
+        areaInteresse:
+          toString(
+            data.areaInteresse ??
+              data.area_interesse ??
+              data.AREA_INTERESSE ??
+              ''
+          ),
+        disponibilidadeHoras:
+          disponibilidadeValor !== null && disponibilidadeValor !== undefined
+            ? String(disponibilidadeValor)
+            : ''
+      }
+    }
+
     if (!user) {
       navigate('/login')
       return
     }
 
-    setFormData({
-      nome: user.nome || '',
-      sobrenome: user.sobrenome || '',
-      email: user.email || '',
-      senha: '',
-      telefone: user.telefone || '',
-      tipoCliente: user.tipoCliente || '',
-      areaInteresse: user.areaInteresse || '',
-      disponibilidadeHoras: user.disponibilidadeHoras?.toString() || ''
-    })
+    const loadUser = async () => {
+      if (!user.codigo) {
+        setFormData(mapUserToForm(user))
+        setLoadingPerfil(false)
+        return
+      }
+
+      try {
+        setLoadingPerfil(true)
+        const freshData = await findOrbiworksById(user.codigo)
+        if (freshData) {
+          setFormData(mapUserToForm(freshData))
+        } else {
+          setFormData(mapUserToForm(user))
+        }
+      } catch (err) {
+        console.error('Erro ao carregar dados do perfil:', err)
+        setFormData(mapUserToForm(user))
+        setError('Não foi possível carregar os dados mais recentes.')
+      } finally {
+        setLoadingPerfil(false)
+      }
+    }
+
+    loadUser()
   }, [user, navigate])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -78,6 +131,12 @@ export default function Perfil() {
         disponibilidadeHoras: disponibilidadeValida
       }
 
+      if (payload.tipoCliente) payload.tipo_cliente = payload.tipoCliente
+      if (payload.areaInteresse) payload.area_interesse = payload.areaInteresse
+      if (payload.disponibilidadeHoras !== undefined) {
+        payload.disponibilidade_horas = payload.disponibilidadeHoras
+      }
+
       // Só inclui senha se foi preenchida
       if (formData.senha) {
         payload.senha = formData.senha
@@ -88,8 +147,6 @@ export default function Perfil() {
 
       await updateProfile(payload)
       setSuccess('Perfil atualizado com sucesso!')
-      // Limpa o campo de senha após atualização
-      setFormData(prev => ({ ...prev, senha: '' }))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao atualizar perfil')
     }
@@ -107,6 +164,16 @@ export default function Perfil() {
 
   if (!user) {
     return null
+  }
+
+  if (loadingPerfil) {
+    return (
+      <div className="min-h-[calc(100vh-200px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="text-gray-600 dark:text-gray-300 text-sm">
+          Carregando suas informações...
+        </div>
+      </div>
+    )
   }
 
   return (
