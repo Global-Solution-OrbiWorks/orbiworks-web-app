@@ -8,6 +8,7 @@ const links = [
   ['Solução', '/solucao'],
   ['Trilhas', '/trilhas'],
   ['Projetos', '/projetos'],
+  ['Emprego', '/emprego'],
   ['Bem-estar', '/bem-estar'],
   ['Chatbot', '/chatbot'],
   ['Comunidade', '/comunidade'],
