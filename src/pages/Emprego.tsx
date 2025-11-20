@@ -169,13 +169,34 @@ export default function Emprego() {
     }
   }
 
+  // Calcular estatísticas para o dashboard
+  const stats = {
+    total: habilidades.length,
+    beginner: habilidades.filter(h => h.nivel === 'Beginner').length,
+    intermediate: habilidades.filter(h => h.nivel === 'Intermediate').length,
+    advanced: habilidades.filter(h => h.nivel === 'Advanced').length,
+    comDescricao: habilidades.filter(h => h.descricao && h.descricao.trim()).length
+  }
+
+  const nivelMedio = habilidades.length > 0
+    ? Math.round(
+        (stats.beginner * 1 + stats.intermediate * 2 + stats.advanced * 3) / habilidades.length
+      )
+    : 0
+
+  const getNivelMedioLabel = () => {
+    if (nivelMedio <= 1) return 'Iniciante'
+    if (nivelMedio <= 2) return 'Intermediário'
+    return 'Avançado'
+  }
+
   if (!isAuthenticated || !user) {
     return null
   }
 
   return (
     <div className="min-h-[calc(100vh-200px)] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h2 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
@@ -185,6 +206,104 @@ export default function Emprego() {
             Gerencie suas habilidades e informações para busca de emprego
           </p>
         </div>
+
+        {/* Dashboard de Estatísticas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Total de Habilidades</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.total}</p>
+              </div>
+              <div className="w-12 h-12 bg-orbiwork-primary-100 dark:bg-orbiwork-primary-900/30 rounded-full flex items-center justify-center">
+                <span className="text-2xl">📊</span>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Nível Médio</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{getNivelMedioLabel()}</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                <span className="text-2xl">⭐</span>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Habilidades Avançadas</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.advanced}</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                <span className="text-2xl">🚀</span>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Com Descrição</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.comDescricao}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                <span className="text-2xl">📝</span>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Gráfico de Distribuição de Níveis */}
+        {habilidades.length > 0 && (
+          <Card className="mb-6 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              Distribuição por Nível
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-gray-700 dark:text-gray-300">Iniciante</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{stats.beginner}</span>
+                </div>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                  <div
+                    className="bg-blue-500 h-3 rounded-full transition-all duration-300"
+                    style={{ width: `${(stats.beginner / stats.total) * 100}%` }}
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-gray-700 dark:text-gray-300">Intermediário</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{stats.intermediate}</span>
+                </div>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                  <div
+                    className="bg-yellow-500 h-3 rounded-full transition-all duration-300"
+                    style={{ width: `${(stats.intermediate / stats.total) * 100}%` }}
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-gray-700 dark:text-gray-300">Avançado</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{stats.advanced}</span>
+                </div>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                  <div
+                    className="bg-green-500 h-3 rounded-full transition-all duration-300"
+                    style={{ width: `${(stats.advanced / stats.total) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Informações do Perfil */}
         <Card className="mb-6 p-6">
@@ -363,6 +482,64 @@ export default function Emprego() {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Recomendações e Insights */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
+            <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-3 flex items-center gap-2">
+              <span className="text-xl">💡</span> Recomendações
+            </h4>
+            <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-400">
+              {stats.total === 0 && (
+                <li>• Adicione pelo menos 3-5 habilidades principais para melhorar seu perfil</li>
+              )}
+              {stats.total > 0 && stats.total < 5 && (
+                <li>• Considere adicionar mais habilidades para destacar seu perfil</li>
+              )}
+              {stats.comDescricao < stats.total && (
+                <li>• Adicione descrições às suas habilidades para fornecer mais contexto</li>
+              )}
+              {stats.advanced === 0 && stats.total > 0 && (
+                <li>• Foque em desenvolver pelo menos uma habilidade ao nível avançado</li>
+              )}
+              {stats.total >= 5 && stats.advanced >= 2 && (
+                <li>• Seu perfil está bem desenvolvido! Continue atualizando suas habilidades</li>
+              )}
+            </ul>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800">
+            <h4 className="font-semibold text-green-900 dark:text-green-300 mb-3 flex items-center gap-2">
+              <span className="text-xl">📈</span> Insights do Perfil
+            </h4>
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="text-green-800 dark:text-green-400 font-medium mb-1">Completude do Perfil</p>
+                <div className="w-full bg-green-200 dark:bg-green-900/30 rounded-full h-2">
+                  <div
+                    className="bg-green-600 dark:bg-green-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min((stats.total / 10) * 100, 100)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-green-700 dark:text-green-500 mt-1">
+                  {Math.min(Math.round((stats.total / 10) * 100), 100)}% completo
+                </p>
+              </div>
+              <div>
+                <p className="text-green-800 dark:text-green-400 font-medium mb-1">Qualidade das Habilidades</p>
+                <div className="w-full bg-green-200 dark:bg-green-900/30 rounded-full h-2">
+                  <div
+                    className="bg-green-600 dark:bg-green-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${(stats.comDescricao / Math.max(stats.total, 1)) * 100}%` }}
+                  />
+                </div>
+                <p className="text-xs text-green-700 dark:text-green-500 mt-1">
+                  {stats.total > 0 ? Math.round((stats.comDescricao / stats.total) * 100) : 0}% com descrição
+                </p>
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* Dica */}
