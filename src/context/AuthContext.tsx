@@ -6,6 +6,8 @@ interface AuthContextType {
   isAuthenticated: boolean
   login: (email: string, senha: string) => Promise<void>
   register: (userData: Partial<Orbiworks>) => Promise<void>
+  updateProfile: (userData: Partial<Orbiworks>) => Promise<void>
+  deleteProfile: () => Promise<void>
   logout: () => void
   loading: boolean
 }
@@ -96,6 +98,66 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const updateProfile = async (userData: Partial<Orbiworks>) => {
+    if (!user?.codigo) {
+      throw new Error('Usuário não encontrado')
+    }
+
+    setLoading(true)
+    try {
+      const response = await fetch(`https://rm564969orbiworksgs.onrender.com/orbiworks/${user.codigo}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || 'Erro ao atualizar perfil')
+      }
+
+      const result = await response.json()
+      const updatedUser = result.data || result
+      setUser(updatedUser)
+    } catch (error) {
+      console.error('Erro ao atualizar perfil:', error)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const deleteProfile = async () => {
+    if (!user?.codigo) {
+      throw new Error('Usuário não encontrado')
+    }
+
+    setLoading(true)
+    try {
+      const response = await fetch(`https://rm564969orbiworksgs.onrender.com/orbiworks/${user.codigo}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || 'Erro ao deletar conta')
+      }
+
+      setUser(null)
+      localStorage.removeItem('user')
+    } catch (error) {
+      console.error('Erro ao deletar conta:', error)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const logout = () => {
     setUser(null)
     localStorage.removeItem('user')
@@ -108,6 +170,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         login,
         register,
+        updateProfile,
+        deleteProfile,
         logout,
         loading
       }}

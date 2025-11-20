@@ -15,6 +15,7 @@ import Comunidade from './pages/Comunidade'
 import Admin from './pages/Admin'
 import Login from './pages/Login'
 import Cadastro from './pages/Cadastro'
+import Perfil from './pages/Perfil'
 import NotFound from './pages/NotFound'
 
 export default function AppRouter() {
@@ -36,6 +37,7 @@ export default function AppRouter() {
           <Route path="admin" element={<Admin />} />
           <Route path="login" element={<Login />} />
           <Route path="cadastro" element={<Cadastro />} />
+          <Route path="perfil" element={<Perfil />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
