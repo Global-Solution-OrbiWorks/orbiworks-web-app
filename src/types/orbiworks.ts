@@ -1,7 +1,9 @@
 // Tipos para a API Orbiworks - Contrato Real
 export type Nivel = 'Beginner' | 'Intermediate' | 'Advanced'
 
-export type Area = 'frontend' | 'backend' | 'fullstack' | 'ml'
+// Áreas de interesse podem variar conforme o cadastro no backend.
+// Mantemos como string para permitir valores flexíveis.
+export type Area = string
 
 export interface Orbiworks {
   codigo?: number

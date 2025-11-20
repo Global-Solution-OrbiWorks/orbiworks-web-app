@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import type { Area } from '../types/orbiworks'
+import { AREA_INTERESSE_OPTIONS } from '../constants/areas'
 
 export default function Cadastro() {
   const [formData, setFormData] = useState({
@@ -40,6 +41,14 @@ export default function Cadastro() {
     }
 
     try {
+      const disponibilidade = formData.disponibilidadeHoras
+        ? parseInt(formData.disponibilidadeHoras, 10)
+        : undefined
+      const disponibilidadeValida =
+        disponibilidade && disponibilidade >= 4 && disponibilidade <= 16
+          ? disponibilidade
+          : undefined
+
       const payload: any = {
         nome: formData.nome,
         sobrenome: formData.sobrenome || undefined,
@@ -48,11 +57,11 @@ export default function Cadastro() {
         telefone: formData.telefone || undefined,
         tipoCliente: formData.tipoCliente || undefined,
         areaInteresse: formData.areaInteresse || undefined,
-        disponibilidadeHoras: formData.disponibilidadeHoras ? parseInt(formData.disponibilidadeHoras) : undefined
+        disponibilidadeHoras: disponibilidadeValida
       }
 
       // Remove campos undefined
-      Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key])
+      Object.keys(payload).forEach((key) => payload[key] === undefined && delete payload[key])
 
       await register(payload)
       setSuccess(true)
@@ -165,20 +174,27 @@ export default function Cadastro() {
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orbiwork-primary-500"
               >
                 <option value="">Selecione...</option>
-                <option value="frontend">Frontend</option>
-                <option value="backend">Backend</option>
-                <option value="fullstack">Fullstack</option>
-                <option value="ml">Machine Learning</option>
+                {AREA_INTERESSE_OPTIONS.map((group) => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.options.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
               </select>
             </div>
             <Input
-              label="Disponibilidade (horas/semana)"
+              label="Disponibilidade diária (horas/dia)"
               type="number"
               name="disponibilidadeHoras"
               value={formData.disponibilidadeHoras}
               onChange={handleChange}
-              placeholder="Ex: 20"
-              min="0"
+              placeholder="Ex: 8"
+              min="4"
+              max="16"
+              step="1"
             />
           </div>
 
