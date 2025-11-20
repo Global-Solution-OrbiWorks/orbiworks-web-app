@@ -65,7 +65,7 @@ A OrbiWorks oferece:
 
 1. Clone o repositório:
 ```bash
-git clone <url-do-repositorio>
+git clone <https://github.com/Global-Solution-OrbiWorks/orbiworks-web-app.git>
 cd global_solution_orbi_works
 ```
 
@@ -223,11 +223,11 @@ await postContato({
 
 ### Integrantes da Equipe
 
-| Nome | RM | Turma | Role | LinkedIn | GitHub |
+| Nome | RM | Turma | Role | GitHub |
 |------|----|----|------|----------|--------|
-| João Vitor Lacerda Consorte | 565565 | 1TDSPC | Front-end | *[Adicionar link]* | *[Adicionar link]* |
-| Pedro de Matos Previtali | 564184 | 1TDSPC | Front-end | *[Adicionar link]* | *[Adicionar link]* |
-| Murillo Fernandes Carapia | 564969 | 1TDSPC | Front-end | *[Adicionar link]* | *[Adicionar link]* |
+| João Vitor Lacerda Consorte | 565565 | 1TDSPH | Front-end, Design de Telas e Homologação | *[https://github.com/joaolacerdaconsorte]* |
+| Pedro de Matos Previtali | 564184 | 1TDSPH | Front-end Bug-Fix | *[https://github.com/PedroPrevitali]* |
+| Murillo Fernandes Carapia | 564969 | 1TDSPH | Back-end e API |  *[https://github.com/MurilloFernandesCarapia]* |
 
 ## Screenshots / Demonstração
 
@@ -292,4 +292,4 @@ Para dúvidas, sugestões ou problemas:
 
 **OrbiWorks** — Aprendizado contínuo. Carreira com propósito.
 
-© 2024 OrbiWorks — Todos os direitos reservados.
+© 2025 OrbiWorks — Todos os direitos reservados.
