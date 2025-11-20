@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import ThemeToggle from './ThemeToggle'
+import UserButton from './UserButton'
 
 const links = [
   ['Home', '/'],
@@ -31,6 +32,7 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <UserButton />
           <ThemeToggle />
 
           {/* Mobile menu button */}
