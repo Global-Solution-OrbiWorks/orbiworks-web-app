@@ -16,7 +16,7 @@ export interface Orbiworks {
   areaInteresse?: Area
   disponibilidadeHoras?: number
   dataContaCriada?: string
-  [key: string]: any // Permite campos adicionais da API
+  [key: string]: unknown // Permite campos adicionais da API
 }
 
 export interface Habilidade {
@@ -35,7 +35,7 @@ export interface Habilidade {
   modalidadeDesejada?: string // MODALIDADE_DESEJADA
   descricaoSobreMim?: string // DESCRICAO_SOBRE_MIM
   contatoWhatsapp?: string // CONTATO_WHATSAPP
-  [key: string]: any // Permite campos adicionais da API
+  [key: string]: unknown // Permite campos adicionais da API
 }
 
 export interface Skill {
