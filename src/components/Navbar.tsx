@@ -12,8 +12,7 @@ const links = [
   ['Chatbot', '/chatbot'],
   ['Comunidade', '/comunidade'],
   ['Equipe', '/equipe'],
-  ['Contato', '/contato'],
-  ['Admin', '/admin']
+  ['Contato', '/contato']
 ] as const
 
 export default function Navbar() {

@@ -10,7 +10,6 @@ import Contato from './pages/Contato'
 import BemEstar from './pages/BemEstar'
 import Chatbot from './pages/Chatbot'
 import Comunidade from './pages/Comunidade'
-import Admin from './pages/Admin'
 import Login from './pages/Login'
 import Cadastro from './pages/Cadastro'
 import Perfil from './pages/Perfil'
@@ -31,7 +30,6 @@ export default function AppRouter() {
           <Route path="bem-estar" element={<BemEstar />} />
           <Route path="chatbot" element={<Chatbot />} />
           <Route path="comunidade" element={<Comunidade />} />
-          <Route path="admin" element={<Admin />} />
           <Route path="login" element={<Login />} />
           <Route path="cadastro" element={<Cadastro />} />
           <Route path="perfil" element={<Perfil />} />
