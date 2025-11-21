@@ -463,9 +463,9 @@ global_solution_orbi_works/
 
 | Nome                         | RM     | Turma  | GitHub                                                                 |
 | ---------------------------- | ------ | ------ | ---------------------------------------------------------------------- |
-| **João Vitor Lacerda Consorte** | 565565 | 1TDSPH | [@joaoconsorte](https://github.com/joaoconsorte)                       |
-| **Pedro de Matos Previtali** | 564184 | 1TDSPH | [@pedroprevitali](https://github.com/pedroprevitali)                   |
-| **Murillo Fernandes Carapia** | 564969 | 1TDSPH | [@murillocarapia](https://github.com/murillocarapia)                   |
+| **João Vitor Lacerda Consorte** | 565565 | 1TDSPH | [@joaoconsorte](https://github.com/joaolacerdaconsorte)                       |
+| **Pedro de Matos Previtali** | 564184 | 1TDSPH | [@pedroprevitali](https://github.com/PedroPrevitali)                   |
+| **Murillo Fernandes Carapia** | 564969 | 1TDSPH | [@murillocarapia](https://github.com/MurilloFernandesCarapia)                   |
 
 ### Fotos dos Integrantes
 
@@ -481,7 +481,7 @@ As fotos dos integrantes estão disponíveis na pasta `public/membros/` e são e
 
 ### Deploy
 
-🌐 **Vercel**: https://orbiworks.vercel.app
+🌐 **Vercel**: https://orbiworks-web-app.vercel.app/
 
 **URL da API**: https://rm564969orbiworksgs.onrender.com
 
@@ -630,7 +630,7 @@ As capturas de tela das principais funcionalidades estão disponíveis na docume
    - Exemplo: `VITE_API_URL=https://rm564969orbiworksgs.onrender.com`
 
 4. **Deploy:**
-   - O Vercel fará deploy automático a cada push na branch `main`
+   - O Vercel fará deploy automático a cada push na branch develop`
    - Ou faça deploy manual via CLI: `vercel --prod`
 
 ### Comandos Úteis
