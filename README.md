@@ -661,7 +661,10 @@ vercel
 
 ---
 
-## 📄 Licença
+
+⚠️⚠️⚠️IMPORTANTE:⚠️⚠️⚠️
+
+⚠️⚠️⚠️ Não Utilizamos HASH Para API de Cadastro e Login, Sabemos que Isso é Incomum e Errado, Por Conta da Proteção de Dados, Mas Como é Apenas um Projeto da Global Solution da FIAP e Ainda Não Aprendemos Completamente a Cripitografar Senhas e Emails com HASHING, Fizemos a API dessa Maneira Pois se Interliga Muito Bem com o Restante das Nossas Entregas da Global Solution. ⚠️⚠️⚠️
 
 Este projeto foi desenvolvido para fins acadêmicos como parte da disciplina **Global Solution** da FIAP.
 
