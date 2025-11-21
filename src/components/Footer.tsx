@@ -14,11 +14,8 @@ export default function Footer() {
             <a href="/solucao" className="text-gray-600 hover:underline dark:text-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-orbiwork-primary-300 rounded">
               Solução
             </a>
-            <a href="/trilhas" className="text-gray-600 hover:underline dark:text-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-orbiwork-primary-300 rounded">
-              Trilhas
-            </a>
-            <a href="/projetos" className="text-gray-600 hover:underline dark:text-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-orbiwork-primary-300 rounded">
-              Projetos
+            <a href="/planos" className="text-gray-600 hover:underline dark:text-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-orbiwork-primary-300 rounded">
+              Planos
             </a>
             <a href="/equipe" className="text-gray-600 hover:underline dark:text-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-orbiwork-primary-300 rounded">
               Equipe

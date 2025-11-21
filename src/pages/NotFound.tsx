@@ -32,14 +32,14 @@ export default function NotFound() {
             <Link to="/solucao" className="text-orbiwork-primary-600 dark:text-orbiwork-primary-400 hover:underline">
               Solução
             </Link>
-            <Link to="/trilhas" className="text-orbiwork-primary-600 dark:text-orbiwork-primary-400 hover:underline">
-              Trilhas
-            </Link>
-            <Link to="/projetos" className="text-orbiwork-primary-600 dark:text-orbiwork-primary-400 hover:underline">
-              Projetos
+            <Link to="/planos" className="text-orbiwork-primary-600 dark:text-orbiwork-primary-400 hover:underline">
+              Planos
             </Link>
             <Link to="/equipe" className="text-orbiwork-primary-600 dark:text-orbiwork-primary-400 hover:underline">
               Equipe
+            </Link>
+            <Link to="/contato" className="text-orbiwork-primary-600 dark:text-orbiwork-primary-400 hover:underline">
+              Contato
             </Link>
           </div>
         </nav>
@@ -47,6 +47,9 @@ export default function NotFound() {
     </section>
   )
 }
+
+
+
 
 
 

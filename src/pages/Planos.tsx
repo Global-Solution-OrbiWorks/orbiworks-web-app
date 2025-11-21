@@ -105,7 +105,7 @@ export default function Planos() {
             </ul>
 
             <Link
-              to={plano.id === 'enterprise' ? '/contato' : '/trilhas'}
+              to={plano.id === 'enterprise' ? '/contato' : '/cadastro'}
               className="mt-auto">
               <Button
                 className={`w-full ${

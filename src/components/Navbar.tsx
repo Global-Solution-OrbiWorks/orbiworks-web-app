@@ -6,8 +6,6 @@ import UserButton from './UserButton'
 const links = [
   ['Home', '/'],
   ['Solução', '/solucao'],
-  ['Trilhas', '/trilhas'],
-  ['Projetos', '/projetos'],
   ['Emprego', '/emprego'],
   ['Bem-estar', '/bem-estar'],
   ['Chatbot', '/chatbot'],
@@ -24,7 +22,11 @@ export default function Navbar() {
       <nav className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-orbiwork-primary-300 rounded">
-            <div className="w-10 h-10 bg-orbiwork-primary-500 rounded-md flex items-center justify-center text-white font-bold">OW</div>
+            <img 
+              src="/favicon.jpg" 
+              alt="OrbiWorks Logo" 
+              className="w-10 h-10 rounded-md object-cover"
+            />
             <div>
               <div className="text-lg font-semibold">OrbiWorks</div>
               <div className="text-xs text-gray-500">Aprendizado contínuo. Carreira com propósito.</div>

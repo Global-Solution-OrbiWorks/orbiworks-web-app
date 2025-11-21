@@ -62,12 +62,12 @@ export default function Home() {
           Requalificação acessível, com projetos reais, coaching e cuidado com o bem-estar.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/trilhas">
-            <Button className="px-8 py-3 text-lg">Criar minha trilha</Button>
+          <Link to="/solucao">
+            <Button className="px-8 py-3 text-lg">Conhecer a solução</Button>
           </Link>
-          <Link to="/projetos">
+          <Link to="/planos">
             <Button variant="outline" className="px-8 py-3 text-lg">
-              Ver projetos reais
+              Ver planos
             </Button>
           </Link>
         </div>
@@ -115,7 +115,7 @@ export default function Home() {
           Junte-se a centenas de profissionais que estão transformando suas carreiras com a OrbiWorks
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/trilhas">
+          <Link to="/cadastro">
             <Button className="px-8 py-3">Começar agora</Button>
           </Link>
           <Link to="/solucao">

@@ -1,7 +1,6 @@
 import React from 'react'
 import MemberCard from '../components/MemberCard'
 import type { Member } from '../types/member'
-import { generateAvatarDataUrl } from '../utils/avatar'
 
 const members: Member[] = [
   {
@@ -11,8 +10,8 @@ const members: Member[] = [
     turma: '1TDSPH',
     role: 'Front-end',
     imageUrl: '/membros/membro1.png',
-    linkedin: 'https://linkedin.com/in/joao-consorte',
-    github: 'https://github.com/joaoconsorte'
+    // não tenho linkedin, mas tenho github
+    github: 'https://github.com/joaolacerdaconsorte'
   },
   {
     id: 'pedro-previtali',
@@ -21,8 +20,8 @@ const members: Member[] = [
     turma: '1TDSPH',
     role: 'Front-end',
     imageUrl: '/membros/membro3.png',
-    linkedin: 'https://linkedin.com/in/pedro-previtali',
-    github: 'https://github.com/pedroprevitali'
+    linkedin: 'https://www.linkedin.com/in/pedro-de-matos-previtali-7978312a9/',
+    github: 'https://github.com/PedroPrevitali'
   },
   {
     id: 'murillo-carapia',
@@ -32,7 +31,7 @@ const members: Member[] = [
     role: 'Front-end',
     imageUrl: '/membros/membro2.png',
     linkedin: 'https://linkedin.com/in/murillo-carapia',
-    github: 'https://github.com/murillocarapia'
+    github: 'https://github.com/MurilloFernandesCarapia'
   }
 ]
 
