@@ -39,7 +39,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, senha: string) => {
     setLoading(true)
     try {
-      const response = await fetch('https://rm564969orbiworksgs.onrender.com/orbiworks', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://rm564969orbiworksgs.onrender.com'
+      const response = await fetch(`${apiUrl}/orbiworks`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -74,7 +75,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (userData: Partial<Orbiworks>) => {
     setLoading(true)
     try {
-      const response = await fetch('https://rm564969orbiworksgs.onrender.com/orbiworks', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://rm564969orbiworksgs.onrender.com'
+      const response = await fetch(`${apiUrl}/orbiworks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -111,7 +113,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setLoading(true)
     try {
-      const response = await fetch(`https://rm564969orbiworksgs.onrender.com/orbiworks/${user.codigo}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://rm564969orbiworksgs.onrender.com'
+      const response = await fetch(`${apiUrl}/orbiworks/${user.codigo}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -148,7 +151,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setLoading(true)
     try {
-      const response = await fetch(`https://rm564969orbiworksgs.onrender.com/orbiworks/${user.codigo}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://rm564969orbiworksgs.onrender.com'
+      const response = await fetch(`${apiUrl}/orbiworks/${user.codigo}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'

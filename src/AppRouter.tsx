@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import Solucao from './pages/Solucao'
 import Planos from './pages/Planos'
 import Equipe from './pages/Equipe'
+import Sobre from './pages/Sobre'
 import Contato from './pages/Contato'
 import BemEstar from './pages/BemEstar'
 import Chatbot from './pages/Chatbot'
@@ -25,6 +26,7 @@ export default function AppRouter() {
           <Route path="solucao" element={<Solucao />} />
           <Route path="planos" element={<Planos />} />
           <Route path="equipe" element={<Equipe />} />
+          <Route path="sobre" element={<Sobre />} />
           <Route path="contato" element={<Contato />} />
           <Route path="bem-estar" element={<BemEstar />} />
           <Route path="chatbot" element={<Chatbot />} />
