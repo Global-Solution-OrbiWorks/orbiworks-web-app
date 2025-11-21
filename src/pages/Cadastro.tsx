@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Input from '../components/Input'
 import Button from '../components/Button'
-import type { Area } from '../types/orbiworks'
+import type { Area, Orbiworks } from '../types/orbiworks'
 import { AREA_INTERESSE_OPTIONS } from '../constants/areas'
 
 export default function Cadastro() {
@@ -49,7 +49,22 @@ export default function Cadastro() {
           ? disponibilidade
           : undefined
 
-      const payload: any = {
+      interface CadastroPayload {
+        nome: string
+        sobrenome?: string
+        email: string
+        senha: string
+        telefone?: string
+        tipoCliente?: string
+        areaInteresse?: Area
+        disponibilidadeHoras?: number
+        tipo_cliente?: string
+        area_interesse?: Area
+        disponibilidade_horas?: number
+        [key: string]: unknown
+      }
+
+      const payload: CadastroPayload = {
         nome: formData.nome,
         sobrenome: formData.sobrenome || undefined,
         email: formData.email,
@@ -68,9 +83,13 @@ export default function Cadastro() {
       }
 
       // Remove campos undefined
-      Object.keys(payload).forEach((key) => payload[key] === undefined && delete payload[key])
+      Object.keys(payload).forEach((key) => {
+        if (payload[key] === undefined) {
+          delete payload[key]
+        }
+      })
 
-      await register(payload)
+      await register(payload as Partial<Orbiworks>)
       setSuccess(true)
       setTimeout(() => {
         navigate('/')

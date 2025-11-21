@@ -121,7 +121,22 @@ export default function Perfil() {
           ? disponibilidade
           : undefined
 
-      const payload: any = {
+      interface PerfilPayload {
+        nome: string
+        sobrenome?: string
+        email: string
+        senha?: string
+        telefone?: string
+        tipoCliente?: string
+        areaInteresse?: Area
+        disponibilidadeHoras?: number
+        tipo_cliente?: string
+        area_interesse?: Area
+        disponibilidade_horas?: number
+        [key: string]: unknown
+      }
+
+      const payload: PerfilPayload = {
         nome: formData.nome,
         sobrenome: formData.sobrenome || undefined,
         email: formData.email,
@@ -143,9 +158,13 @@ export default function Perfil() {
       }
 
       // Remove campos undefined
-      Object.keys(payload).forEach((key) => payload[key] === undefined && delete payload[key])
+      Object.keys(payload).forEach((key) => {
+        if (payload[key] === undefined) {
+          delete payload[key]
+        }
+      })
 
-      await updateProfile(payload)
+      await updateProfile(payload as Partial<Orbiworks>)
       setSuccess('Perfil atualizado com sucesso!')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao atualizar perfil')
