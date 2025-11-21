@@ -455,7 +455,6 @@ global_solution_orbi_works/
 | `/cadastro` | Página de cadastro |
 | `/perfil` | Perfil do usuário |
 | `/emprego` | Área de empregos e habilidades |
-| `/admin` | Área administrativa |
 | `*` | Página 404 (NotFound) |
 
 ---
