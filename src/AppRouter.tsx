@@ -6,9 +6,6 @@ import Solucao from './pages/Solucao'
 import Planos from './pages/Planos'
 import Equipe from './pages/Equipe'
 import Contato from './pages/Contato'
-import Trilhas from './pages/Trilhas'
-import Projetos from './pages/Projetos'
-import ProjetoDetalhe from './pages/ProjetoDetalhe'
 import BemEstar from './pages/BemEstar'
 import Chatbot from './pages/Chatbot'
 import Comunidade from './pages/Comunidade'
@@ -29,9 +26,6 @@ export default function AppRouter() {
           <Route path="planos" element={<Planos />} />
           <Route path="equipe" element={<Equipe />} />
           <Route path="contato" element={<Contato />} />
-          <Route path="trilhas" element={<Trilhas />} />
-          <Route path="projetos" element={<Projetos />} />
-          <Route path="projetos/:id" element={<ProjetoDetalhe />} />
           <Route path="bem-estar" element={<BemEstar />} />
           <Route path="chatbot" element={<Chatbot />} />
           <Route path="comunidade" element={<Comunidade />} />
