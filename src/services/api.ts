@@ -1,7 +1,7 @@
 import type { Orbiworks, Habilidade } from '../types/orbiworks'
 import type { ProjetoEmpresa } from '../types/projeto'
 
-const BASE_URL = 'https://rm564969orbiworksgs.onrender.com'
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://rm564969orbiworksgs.onrender.com'
 
 export interface ContatoPayload {
   nome: string

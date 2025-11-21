@@ -446,6 +446,7 @@ global_solution_orbi_works/
 | `/solucao` | Visão geral da solução |
 | `/planos` | Planos e preços |
 | `/equipe` | Página da equipe (integrantes) |
+| `/sobre` | Página sobre o projeto |
 | `/contato` | Formulário de contato |
 | `/bem-estar` | Bem-estar e produtividade |
 | `/chatbot` | Chatbot de carreira |
@@ -484,6 +485,10 @@ As fotos dos integrantes estão disponíveis na pasta `public/membros/` e são e
 🌐 **Vercel**: https://orbiworks.vercel.app
 
 **URL da API**: https://rm564969orbiworksgs.onrender.com
+
+### Vídeo de Apresentação
+
+🎥 **YouTube**: [Link do vídeo será adicionado após gravação]
 
 ---
 

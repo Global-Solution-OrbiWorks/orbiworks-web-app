@@ -6,6 +6,7 @@ import UserButton from './UserButton'
 const links = [
   ['Home', '/'],
   ['Solução', '/solucao'],
+  ['Sobre', '/sobre'],
   ['Emprego', '/emprego'],
   ['Bem-estar', '/bem-estar'],
   ['Chatbot', '/chatbot'],
