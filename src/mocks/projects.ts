@@ -11,7 +11,7 @@ const projects: Project[] = [
     id: 'pr1',
     title: 'Portal de Portfólio',
     description: 'Construir um portal para que profissionais mostrem projetos reais para empresas parceiras.',
-    company: 'Empresa A',
+    company: 'Lider Inovação Tecnológica LTDA',
     tags: ['frontend', 'portfólio']
   },
   {

@@ -68,7 +68,7 @@ O projeto está integrado com uma API RESTful desenvolvida em Java seguindo Doma
 A URL da API está configurada diretamente no código (`src/services/api.ts`) como `https://rm564969orbiworksgs.onrender.com`. Para usar uma URL diferente em desenvolvimento, você pode criar um arquivo `.env`:
 
 ```env
-VITE_API_URL=https://sua-api.com
+VITE_API_URL=https://rm564969orbiworksgs.onrender.com
 ```
 
 ### Uso dos Serviços de API
@@ -487,7 +487,7 @@ As fotos dos integrantes estão disponíveis na pasta `public/membros/` e são e
 
 ### Vídeo de Apresentação
 
-🎥 **YouTube**: [Link do vídeo será adicionado após gravação]
+🎥 **YouTube**: https://www.youtube.com/watch?v=Mgpxrv49_cU
 
 ---
 
@@ -609,29 +609,21 @@ export async function findOrbiworksById(codigo: number): Promise<Orbiworks | nul
 ## 📸 Screenshots / Demonstração
 
 As capturas de tela das principais funcionalidades estão disponíveis na documentação visual do projeto, demonstrando a interface responsiva, tema escuro/claro, e as principais páginas da aplicação.
+### Página Inicial
+![Página Inicial da OrbiWorks](public/screenshots/home.png)
 
+### Pagina da Equipe
+![Integrantes](public/screenshots/equipe.png)
+
+### Pagina do ChatBot
+![Chat Bot](public/screenshots/chatbot.png)
+
+### Pagina de Login Api
+![Login](public/screenshots/apilogin.png)
+
+### Pagina Sobre
+![Sobre Nós](public/screenshots/sobre.png)
 ---
-
-## 🚀 Deploy Vercel
-
-### Configuração
-
-1. **Conecte o repositório** no Vercel (via GitHub/GitLab/Bitbucket)
-
-2. **Configure o projeto:**
-   - **Framework Preset:** Vite
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-   - **Install Command:** `npm install`
-
-3. **Adicione variáveis de ambiente:**
-   - Vá em **Settings → Environment Variables**
-   - Adicione `VITE_API_URL` com a URL da sua API Java remota
-   - Exemplo: `VITE_API_URL=https://rm564969orbiworksgs.onrender.com`
-
-4. **Deploy:**
-   - O Vercel fará deploy automático a cada push na branch develop`
-   - Ou faça deploy manual via CLI: `vercel --prod`
 
 ### Comandos Úteis
 
@@ -651,7 +643,7 @@ vercel
 ## 🙏 Agradecimentos
 
 * FIAP - Faculdade de Informática e Administração Paulista
-* Global Solution - Projeto integrador do 2º semestre
+* Professor Alexandre Carlos de Jesus [@alecarlosjesus](https://github.com/alecarlosjesus)
 
 ---
 
@@ -662,9 +654,12 @@ vercel
 ---
 
 
-⚠️⚠️⚠️IMPORTANTE:⚠️⚠️⚠️
-
-⚠️⚠️⚠️ Não Utilizamos HASH Para API de Cadastro e Login, Sabemos que Isso é Incomum e Errado, Por Conta da Proteção de Dados, Mas Como é Apenas um Projeto da Global Solution da FIAP e Ainda Não Aprendemos Completamente a Cripitografar Senhas e Emails com HASHING, Fizemos a API dessa Maneira Pois se Interliga Muito Bem com o Restante das Nossas Entregas da Global Solution. ⚠️⚠️⚠️
+> [!WARNING]
+> **Nota sobre Segurança e Criptografia**
+>
+> Este projeto optou por não utilizar **Hashing** para criptografia de senhas na API de Cadastro e Login.
+>
+> Reconhecemos que esta prática não é adequada para ambientes de produção e fere princípios de Proteção de Dados. No entanto, como este é um MVP acadêmico para a **Global Solution (FIAP)** e o foco atual do aprendizado está na integração entre Front-end e Back-end, mantivemos os dados em texto plano para viabilizar a entrega dentro do prazo e escopo técnico atuais.
 
 Este projeto foi desenvolvido para fins acadêmicos como parte da disciplina **Global Solution** da FIAP.
 
