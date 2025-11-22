@@ -15,6 +15,7 @@
 9. [Screenshots / Demonstração](#-screenshots--demonstração)
 10. [Autores e Contato](#-autores-e-contato)
 11. [Agradecimentos](#-agradecimentos)
+12. [Links e Recursos](#-links-e-recursos)
 
 ---
 
@@ -78,6 +79,8 @@ A **OrbiWorks** é uma plataforma completa de aprendizagem contínua e desenvolv
 ---
 
 ## 💻 Como Usar
+
+
 
 Você pode acessar a aplicação rodando localmente (passos acima) ou através do deploy oficial hospedado.
 
@@ -172,20 +175,6 @@ A comunicação segue o fluxo: `Páginas (UI) → Context API → Services → A
 
 ---
 
-### 🔗 Links e Recursos
-Aqui estão os links diretos para acessar e avaliar o projeto:
-
-* 🌐 **Deploy (Acesso Online):** [https://orbiworks-web-app.vercel.app/](https://orbiworks-web-app.vercel.app/)
-* 🔗 **Repositório GitHub:** [https://github.com/Global-Solution-OrbiWorks/orbiworks-web-app](https://github.com/Global-Solution-OrbiWorks/orbiworks-web-app)
-* 🔌 **API URL:** `https://rm564969orbiworksgs.onrender.com`
-
-### 🎥 Vídeo de Apresentação
-Clique na imagem abaixo para assistir à demonstração completa no YouTube:
-
-[![Vídeo de Apresentação OrbiWorks](https://img.youtube.com/vi/Mgpxrv49_cU/0.jpg)](https://www.youtube.com/watch?v=Mgpxrv49_cU)
-
----
-
 ## 👥 Autores e Contato
 
 | Foto | Nome | RM | Turma | Links |
@@ -209,3 +198,17 @@ Clique na imagem abaixo para assistir à demonstração completa no YouTube:
 🎓 **OrbiWorks** - Aprendizado contínuo. Carreira com propósito.
 
 © 2025 OrbiWorks — Todos os direitos reservados.
+
+---
+
+### 🔗 Links e Recursos
+Aqui estão os links diretos para acessar e avaliar o projeto:
+
+* 🌐 **Deploy (Acesso Online):** [https://orbiworks-web-app.vercel.app/](https://orbiworks-web-app.vercel.app/)
+* 🔗 **Repositório GitHub:** [https://github.com/Global-Solution-OrbiWorks/orbiworks-web-app](https://github.com/Global-Solution-OrbiWorks/orbiworks-web-app)
+* 🔌 **API URL:** `https://rm564969orbiworksgs.onrender.com`
+
+### 🎥 Vídeo de Apresentação
+Clique na imagem abaixo para assistir à demonstração completa no YouTube:
+
+[![Vídeo de Apresentação OrbiWorks](https://img.youtube.com/vi/Mgpxrv49_cU/0.jpg)](https://www.youtube.com/watch?v=Mgpxrv49_cU)
