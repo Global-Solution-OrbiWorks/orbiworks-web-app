@@ -622,7 +622,7 @@ As capturas de tela das principais funcionalidades estão disponíveis na docume
 ![Login](public/screenshots/apilogin.png)
 
 ### Pagina Sobre
-![Sobre Nós](public/screenshots/Sobre.png)
+![Sobre Nós](public/screenshots/sobre.png)
 ---
 
 ## 🚀 Deploy Vercel
