@@ -180,7 +180,6 @@ A comunicação segue o fluxo: `Páginas (UI) → Context API → Services → A
 | <img src="public/membros/membro2.png" width="50" style="border-radius:50%"> | **Pedro de Matos** | 564184 | 1TDSPH | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/) [![GitHub](https://img.shields.io/badge/GitHub-100000?style=flat&logo=github&logoColor=white)](https://github.com/PedroPrevitali) |
 | <img src="public/membros/membro3.png" width="50" style="border-radius:50%"> | **Murillo Fernandes** | 564969 | 1TDSPH | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/) [![GitHub](https://img.shields.io/badge/GitHub-100000?style=flat&logo=github&logoColor=white)](https://github.com/MurilloFernandesCarapia) |
 
-*(Obs: As imagens dos integrantes devem estar salvas em `public/membros/`)*
 
 ---
 
