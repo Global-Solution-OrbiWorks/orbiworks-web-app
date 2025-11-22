@@ -609,7 +609,20 @@ export async function findOrbiworksById(codigo: number): Promise<Orbiworks | nul
 ## 📸 Screenshots / Demonstração
 
 As capturas de tela das principais funcionalidades estão disponíveis na documentação visual do projeto, demonstrando a interface responsiva, tema escuro/claro, e as principais páginas da aplicação.
+### Página Inicial
+![Página Inicial da OrbiWorks](public/screenshots/home.png)
 
+### Pagina da Equipe
+![Integrantes](public/screenshots/equipe.png)
+
+### Pagina do ChatBot
+![Chat Bot](public/screenshots/chatbot.png)
+
+### Pagina de Login Api
+![Login](public/screenshots/apilogin.png)
+
+### Pagina Sobre
+![Sobre Nós](public/screenshots/Sobre.png)
 ---
 
 ## 🚀 Deploy Vercel
