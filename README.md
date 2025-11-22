@@ -487,7 +487,7 @@ As fotos dos integrantes estão disponíveis na pasta `public/membros/` e são e
 
 ### Vídeo de Apresentação
 
-🎥 **YouTube**: [Link do vídeo será adicionado após gravação]
+🎥 **YouTube**: https://www.youtube.com/watch?v=Mgpxrv49_cU
 
 ---
 
